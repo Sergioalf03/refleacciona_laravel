@@ -18,15 +18,56 @@ use Illuminate\Support\Str;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]], function() {
+    Route::get('/logout', function (Request $request) {
+        $request->user()->tokens()->where('id', request()->user()->currentAccessToken()->id)->delete();
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+        ], 200);
+    });
+
+    Route::get('/logout-all-devices', function(Request $request) {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+        ], 200);
+    });
+
+    Route::get('/token-list', function (Request $request) {
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => $request->user()->tokens(),
+        ], 200);
+    });
+
+    Route::get('/valid-token', function (Request $request) {
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => [
+                'validToken' => true,
+            ],
+        ], 200);
+    });
+
+    Route::get('/user-data', function (Request $request) {
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => [
+                'userName' => $request->user()->name,
+                'userEmail' => $request->user()->email,
+            ],
+        ], 200);
+    });
 });
 
-Route::middleware('auth:sanctum')->post('/1', function(Request $request) {
-    return $request->user();
-});
-
-Route::post('/sanctum/token', function (Request $request) {
+Route::post('/login', function (Request $request) {
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
@@ -45,9 +86,9 @@ Route::post('/sanctum/token', function (Request $request) {
         'code' => 200,
         'message' => 'Success',
         'data' => [
-            'token' => $user->createToken($request->device_name),
-            'user_name' =>  $user->name,
-            'user_email' =>  $user->email,
+            'token' => $user->createToken($request->device_name)->plainTextToken,
+            'userName' =>  $user->name,
+            'userEmail' =>  $user->email,
         ],
     ], 200);
 });
@@ -81,10 +122,5 @@ route::post('/register', function(Request $request) {
     ], 200);
 });
 
-// remove tokens
 
-// Revoke all tokens...
-// $user->tokens()->delete();
 
-// Revoke a specific token...
-// $user->tokens()->where('id', $tokenId)->delete();
