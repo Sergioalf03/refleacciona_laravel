@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use App\Mail\EmailConfirmEmail;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +96,12 @@ Route::post('/login', function (Request $request) {
 });
 
 route::post('/register', function(Request $request) {
+    // $data = ['message' => 'Bienvenido!'];
+
+    // $result = Mail::to('sergioalf03@gmail.com')->send(new EmailConfirmEmail($data));
+
+    // return $result;
+
     $userDb = new user;
     $userResult = $userDb::where('email', $request['email'])
         ->first();
