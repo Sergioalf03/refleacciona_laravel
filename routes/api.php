@@ -116,7 +116,7 @@ route::post('/register', function(Request $request) {
         return abort(409, 'El correo ya está registrado');
     }
 
-    $randomString = Str::random(64);
+    $randomString = mt_rand(100000, 999999) . '';
 
     $userResult = $userDb::create([
         'name' => $request['name'],
@@ -132,9 +132,82 @@ route::post('/register', function(Request $request) {
         'message' => 'Success',
         'data' => [
             'id' => $userResult['id'],
+            'token' => $randomString,
         ],
     ], 200);
 });
 
+route::post('/confirm-email', function(Request $request) {
+    $user = new User;
+    $userResult = $user::where('id', $request['id'])
+        ->where('status', 2)
+        ->first();
 
+    if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
+        return abort(409, 'No se encontró el usuario');
+    }
 
+    $userResult->fill([
+        'status' => 1,
+        'key' => 'nop',
+    ])->save();
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'Success',
+    ], 200);
+});
+
+route::post('/forget-password', function(Request $request) {
+    $userDb = new user;
+    $userResult = $userDb::where('email', $request['email'])
+        ->where('status', 1)
+        ->select('id')
+        ->first();
+
+    if (!isset($userResult)) {
+        return abort(409, 'No se encontró el usuario');
+    }
+
+    $randomString = mt_rand(100000, 999999) . '';
+
+    $userDb::where('email', $request['email'])
+        ->update([
+            'key' => Hash::make($randomString),
+        ]);
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'Success',
+        'data' => [
+            'id' => $userResult['id'],
+            'token' => $randomString,
+        ],
+    ], 200);
+});
+
+route::post('/change-password', function(Request $request) {
+    $userDb = new user;
+    $userResult = $userDb::where('id', $request['id'])
+        ->where('status', 1)
+        ->select(
+            'key',
+            'password',
+        )
+        ->first();
+
+    if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
+        return abort(409, 'No se encontró el usuario');
+    }
+
+    $userDb::where('id', $request['id'])
+        ->update([
+            'key' => 'nop',
+            'password' => Hash::make($request['password']),
+        ]);
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'Success',
+    ], 200);
+});
