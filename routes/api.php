@@ -78,10 +78,10 @@ Route::post('/login', function (Request $request) {
 
     $user = User::where('email', $request->email)->first();
 
+    // return $user;
+
     if (!$user || !Hash::check($request->password, $user->password)) {
-        throw ValidationException::withMessages([
-            'email' => ['Las credenciales son incorrectas'],
-        ]);
+        return abort(409, 'Las credenciales son incorrectas');
     }
 
     return response()->json([
@@ -96,6 +96,12 @@ Route::post('/login', function (Request $request) {
 });
 
 route::post('/register', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'phone_number' => 'required',
+        'key' => 'required',
+    ]);
     // $data = ['message' => 'Bienvenido!'];
 
     // $result = Mail::to('sergioalf03@gmail.com')->send(new EmailConfirmEmail($data));
