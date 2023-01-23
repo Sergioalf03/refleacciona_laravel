@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditoryController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -67,6 +68,12 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
             ],
         ], 200);
     });
+
+    Route::post('/auditory/save', [AuditoryController::class, 'saveAuditory']);
+    Route::post('/auditory/update/{id}', [AuditoryController::class, 'updateAuditory']);
+    Route::get('/auditory/list', [AuditoryController::class, 'getAuditoriesList']);
+    Route::get('/auditory/count', [AuditoryController::class, 'getAuditoriesCount']);
+    Route::get('/auditory/form/{id}', [AuditoryController::class, 'getForm']);
 });
 
 Route::post('/login', function (Request $request) {
