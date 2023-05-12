@@ -195,7 +195,7 @@ route::post('/forget-password', function(Request $request) {
 
 route::post('/change-password', function(Request $request) {
     $userDb = new user;
-    $userResult = $userDb::where('id', $request['id'])
+    $userResult = $userDb::where('email', $request['email'])
         ->where('status', 1)
         ->select(
             'key',
@@ -207,7 +207,7 @@ route::post('/change-password', function(Request $request) {
         return abort(409, 'No se encontró el usuario');
     }
 
-    $userDb::where('id', $request['id'])
+    $userDb::where('email', $request['email'])
         ->update([
             'key' => 'nop',
             'password' => Hash::make($request['password']),
