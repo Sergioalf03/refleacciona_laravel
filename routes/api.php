@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditoryController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -67,6 +68,12 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
             ],
         ], 200);
     });
+
+    Route::post('/auditory/save', [AuditoryController::class, 'saveAuditory']);
+    Route::post('/auditory/update/{id}', [AuditoryController::class, 'updateAuditory']);
+    Route::get('/auditory/list', [AuditoryController::class, 'getAuditoriesList']);
+    Route::get('/auditory/count', [AuditoryController::class, 'getAuditoriesCount']);
+    Route::get('/auditory/form/{id}', [AuditoryController::class, 'getForm']);
 });
 
 Route::post('/login', function (Request $request) {
@@ -78,10 +85,10 @@ Route::post('/login', function (Request $request) {
 
     $user = User::where('email', $request->email)->first();
 
+    // return $user;
+
     if (!$user || !Hash::check($request->password, $user->password)) {
-        throw ValidationException::withMessages([
-            'email' => ['Las credenciales son incorrectas'],
-        ]);
+        return abort(409, 'Las credenciales son incorrectas');
     }
 
     return response()->json([
@@ -96,6 +103,12 @@ Route::post('/login', function (Request $request) {
 });
 
 route::post('/register', function(Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'phone_number' => 'required',
+        'key' => 'required',
+    ]);
     // $data = ['message' => 'Bienvenido!'];
 
     // $result = Mail::to('sergioalf03@gmail.com')->send(new EmailConfirmEmail($data));
@@ -110,7 +123,7 @@ route::post('/register', function(Request $request) {
         return abort(409, 'El correo ya está registrado');
     }
 
-    $randomString = Str::random(64);
+    $randomString = mt_rand(100000, 999999) . '';
 
     $userResult = $userDb::create([
         'name' => $request['name'],
@@ -126,9 +139,82 @@ route::post('/register', function(Request $request) {
         'message' => 'Success',
         'data' => [
             'id' => $userResult['id'],
+            'token' => $randomString,
         ],
     ], 200);
 });
 
+route::post('/confirm-email', function(Request $request) {
+    $user = new User;
+    $userResult = $user::where('id', $request['id'])
+        ->where('status', 2)
+        ->first();
 
+    if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
+        return abort(409, 'No se encontró el usuario');
+    }
 
+    $userResult->fill([
+        'status' => 1,
+        'key' => 'nop',
+    ])->save();
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'Success',
+    ], 200);
+});
+
+route::post('/forget-password', function(Request $request) {
+    $userDb = new user;
+    $userResult = $userDb::where('email', $request['email'])
+        ->where('status', 1)
+        ->select('id')
+        ->first();
+
+    if (!isset($userResult)) {
+        return abort(409, 'No se encontró el usuario');
+    }
+
+    $randomString = mt_rand(100000, 999999) . '';
+
+    $userDb::where('email', $request['email'])
+        ->update([
+            'key' => Hash::make($randomString),
+        ]);
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'Success',
+        'data' => [
+            'id' => $userResult['id'],
+            'token' => $randomString,
+        ],
+    ], 200);
+});
+
+route::post('/change-password', function(Request $request) {
+    $userDb = new user;
+    $userResult = $userDb::where('email', $request['email'])
+        ->where('status', 1)
+        ->select(
+            'key',
+            'password',
+        )
+        ->first();
+
+    if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
+        return abort(409, 'No se encontró el usuario');
+    }
+
+    $userDb::where('email', $request['email'])
+        ->update([
+            'key' => 'nop',
+            'password' => Hash::make($request['password']),
+        ]);
+
+    return response()->json([
+        'code' => 200,
+        'message' => 'Success',
+    ], 200);
+});
