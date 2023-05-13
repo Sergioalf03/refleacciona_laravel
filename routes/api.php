@@ -81,6 +81,23 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
         ], 200);
     });
 
+    Route::post('/update-user', function (Request $request) {
+        $userId = $request->user()->id;
+
+        $user = new User;
+        $userRes = $user::where('id', $userId)
+            ->update([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'phone_number' => $request['phone_number'],
+            ]);
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+        ], 200);
+    });
+
     Route::post('/auditory/save', [AuditoryController::class, 'saveAuditory']);
     Route::post('/auditory/update/{id}', [AuditoryController::class, 'updateAuditory']);
     Route::get('/auditory/list', [AuditoryController::class, 'getAuditoriesList']);
