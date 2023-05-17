@@ -5,10 +5,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
-use App\Mail\EmailConfirmEmail;
-use Illuminate\Support\Facades\Mail;
+// use Illuminate\Validation\ValidationException;
+// use Illuminate\Support\Str;
+// use App\Mail\EmailConfirmEmail;
+// use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,18 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
                 'email' => $request['email'],
                 'phone_number' => $request['phone_number'],
             ]);
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+        ], 200);
+    });
+
+    Route::post('/update-logo', function (Request $request) {
+        $userId = $request->user()->id;
+
+        // Storage::delete($userId . '.f');
+        Storage::disk('local')->put($userId. '.jpeg', file_get_contents($request['image']));
 
         return response()->json([
             'code' => 200,
