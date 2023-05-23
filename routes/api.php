@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuditoryController;
+use App\Mail\EmailConfirmEmail;
+use App\Mail\ForgetPasswordEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Validation\ValidationException;
 // use Illuminate\Support\Str;
@@ -151,11 +154,6 @@ route::post('/register', function(Request $request) {
         'phone_number' => 'required',
         'key' => 'required',
     ]);
-    // $data = ['message' => 'Bienvenido!'];
-
-    // $result = Mail::to('sergioalf03@gmail.com')->send(new EmailConfirmEmail($data));
-
-    // return $result;
 
     $userDb = new user;
     $userResult = $userDb::where('email', $request['email'])
@@ -176,12 +174,13 @@ route::post('/register', function(Request $request) {
         'img' => 'nop', // to save img
     ]);
 
+    $mailResult = Mail::to($request['email'])->send(new EmailConfirmEmail($randomString));
+
     return response()->json([
         'code' => 200,
         'message' => 'Success',
         'data' => [
             'id' => $userResult['id'],
-            'token' => $randomString,
         ],
     ], 200);
 });
@@ -225,12 +224,13 @@ route::post('/forget-password', function(Request $request) {
             'key' => Hash::make($randomString),
         ]);
 
+    $mailResult = Mail::to($request['email'])->send(new ForgetPasswordEmail($randomString));
+
     return response()->json([
         'code' => 200,
         'message' => 'Success',
         'data' => [
             'id' => $userResult['id'],
-            'token' => $randomString,
         ],
     ], 200);
 });
