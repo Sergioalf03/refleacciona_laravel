@@ -181,6 +181,7 @@ route::post('/register', function(Request $request) {
         'message' => 'Success',
         'data' => [
             'id' => $userResult['id'],
+            'mail' => $mailResult,
         ],
     ], 200);
 });
