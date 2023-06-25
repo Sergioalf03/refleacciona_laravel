@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EmailConfirmEmail extends Mailable
+class ForgetPasswordEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -33,7 +33,7 @@ class EmailConfirmEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Confirmación de correo electrónico',
+            subject: 'Solicitud de cambio de contraseña',
         );
     }
 
@@ -45,7 +45,7 @@ class EmailConfirmEmail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.email_confirmation',
+            view: 'emails.forget_password',
         );
     }
 
@@ -59,14 +59,15 @@ class EmailConfirmEmail extends Mailable
         return [];
     }
 
-    public function build() {
+    public function build()
+    {
         $address = env('MAIL_FROM_ADDRESS');
         $subject = 'Confirmación de correo';
         $name = env('MAIL_FROM_NAME');
 
-        return $this->view('emails.email_confirmation')
+        return $this->view('emails.forget_password')
             ->from($address, $name)
-            // ->cc($address, $name)
+            ->cc($address, $name)
             // ->bcc($address, $name)
             // ->replyTo($address, $name)
             ->subject($subject)
