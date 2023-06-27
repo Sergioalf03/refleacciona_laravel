@@ -143,6 +143,8 @@ Route::post('/login', function (Request $request) {
             'token' => $user->createToken($request->device_name)->plainTextToken,
             'userName' =>  $user->name,
             'userEmail' =>  $user->email,
+            'userPhone' => $user->phone_number,
+            'userId' => $user->id,
         ],
     ], 200);
 });
