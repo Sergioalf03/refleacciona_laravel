@@ -43,7 +43,8 @@ class AuditoryController extends Controller
         ], 200);
     }
 
-    public function updateAuditory(Request $request, $id) {
+    public function updateAuditory(Request $request, $id)
+    {
         $userOwner = $request->user()->id;
         $auditory = new Auditory;
 
