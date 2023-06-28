@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('page');
             $table->integer('indx');
             $table->integer('status');
+            $table->unsignedBigInteger('local_id');
+            $table->string('local_status');
             $table->timestamps();
         });
     }
