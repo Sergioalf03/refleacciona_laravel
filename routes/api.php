@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuditoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VersionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,9 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
     Route::post('/update-user', [UserController::class, 'updateUser']);
     Route::post('/update-logo', [UserController::class, 'updateLogo']);
 
+    Route::get('/version/last', [VersionController::class, 'getLastVersion']);
+    Route::get('/version/get-last-version', [VersionController::class, 'getNewRows']);
+
     Route::post('/auditory/save', [AuditoryController::class, 'saveAuditory']);
     Route::post('/auditory/update/{id}', [AuditoryController::class, 'updateAuditory']);
     Route::get('/auditory/list', [AuditoryController::class, 'getAuditoriesList']);
@@ -35,7 +39,7 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
 });
 
 Route::post('/login', [UserController::class, 'login']);
-route::post('/register', [UserController::class, 'register']);
-route::post('/confirm-email', [UserController::class, 'confirmEmail']);
-route::post('/forget-password', [UserController::class, 'forgetPassword']);
-route::post('/change-password', [UserController::class, 'changePassword']);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/confirm-email', [UserController::class, 'confirmEmail']);
+Route::post('/forget-password', [UserController::class, 'forgetPassword']);
+Route::post('/change-password', [UserController::class, 'changePassword']);

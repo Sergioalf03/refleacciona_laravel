@@ -15,13 +15,14 @@ return new class extends Migration
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
+            $table->string('uid');
             $table->string('name');
             $table->string('subname');
             $table->integer('page');
             $table->integer('indx');
             $table->integer('status');
-            $table->unsignedBigInteger('local_id');
-            $table->string('local_status');
+            $table->string('version')->default(1);
+
             $table->timestamps();
         });
     }

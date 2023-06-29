@@ -19,14 +19,13 @@ return new class extends Migration
             $table->string('sentence');
             $table->string('popup');
             $table->string('score');
-            $table->string('condition');
+            $table->string('cond');
             $table->string('answers');
             $table->integer('has_evidence');
             $table->integer('indx');
             $table->integer('status');
             $table->unsignedBigInteger('section_id');
-            $table->unsignedBigInteger('local_id');
-            $table->string('local_status');
+            $table->string('version')->default(1);
 
             $table->foreign('section_id')->references('id')->on('sections');
             $table->timestamps();

@@ -14,11 +14,12 @@ class Question extends Model
         'sentence',
         'popup',
         'score',
-        'condition',
+        'cond',
         'answers',
         'has_evidence',
         'indx',
         'status',
         'section_id',
+        'version',
     ];
 }

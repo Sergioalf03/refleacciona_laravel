@@ -10,10 +10,12 @@ class Section extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uid',
         'name',
         'subname',
         'page',
         'indx',
         'status',
+        'version',
     ];
 }

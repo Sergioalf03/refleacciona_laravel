@@ -13,21 +13,35 @@ class VersionController extends Controller
     public function getLastVersion()
     {
         $version = new Version;
-        $version::last();
+        $versionRes = $version::select(
+                'name',
+                'number',
+            )
+            ->orderBy('id', 'desc')
+            ->first();
 
         return response()->json([
             'code' => 200,
             'message' => 'Success',
-            'data' => $version,
+            'data' => $versionRes,
         ], 200);
     }
 
     public function getNewRows() {
+        $version = new Version;
+        $versionRes = $version::select(
+                'number',
+            )
+            ->orderBy('id', 'desc')
+            ->first();
+
         $section = new Section;
-        $sectionResult = $section::get();
+        $sectionResult = $section::where('version', $versionRes['number'])
+            ->get();
 
         $question = new Question;
-        $questionResult = $question::get();
+        $questionResult = $question::where('version', $versionRes['number'])
+            ->get();
 
         return response()->json([
             'code' => 200,
