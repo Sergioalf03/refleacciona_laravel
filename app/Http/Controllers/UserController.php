@@ -169,22 +169,18 @@ class UserController extends Controller
         return response()->json([
             'code' => 200,
             'message' => 'Success',
-            'data' => [
-                'id' => $userResult['id'],
-                'mail' => $mailResult,
-            ],
         ], 200);
     }
 
     public function confirmEmail(Request $request)
     {
         $user = new User;
-        $userResult = $user::where('id', $request['id'])
+        $userResult = $user::where('email', $request['email'])
             ->where('status', 2)
             ->first();
 
         if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
-            return abort(409, 'No se encontró el usuario');
+            return abort(409, 'No coincide el código con el correo');
         }
 
         $userResult->fill([
@@ -240,7 +236,7 @@ class UserController extends Controller
             ->first();
 
         if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
-            return abort(409, 'No se encontró el usuario');
+            return abort(409, 'No coincide el código con el correo');
         }
 
         $userDb::where('email', $request['email'])
