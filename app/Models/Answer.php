@@ -5,22 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Auditory extends Model
+class Answer extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'close_note',
-        'date',
-        'time',
-        'lat',
-        'lng',
-        'status',
+        'value',
+        'notes',
         'creation_date',
         'update_date',
-        'external_id',
-        'user_id',
+        'auditory_id',
+        'question_id',
     ];
 }

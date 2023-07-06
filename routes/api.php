@@ -31,11 +31,11 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
     Route::get('/version/last', [VersionController::class, 'getLastVersion']);
     Route::get('/version/get-last-version', [VersionController::class, 'getNewRows']);
 
-    Route::post('/auditory/save', [AuditoryController::class, 'saveAuditory']);
-    Route::post('/auditory/update/{id}', [AuditoryController::class, 'updateAuditory']);
-    Route::get('/auditory/list', [AuditoryController::class, 'getAuditoriesList']);
-    Route::get('/auditory/count', [AuditoryController::class, 'getAuditoriesCount']);
-    Route::get('/auditory/form/{id}', [AuditoryController::class, 'getForm']);
+    Route::get('/auditory/list', [AuditoryController::class, 'getList']);
+    Route::get('/auditory/detail/{id}', [AuditoryController::class, 'getDetail']);
+    Route::post('/auditory/import', [AuditoryController::class, 'import']);
+    Route::post('/auditory/upload-auditory-evidence', [AuditoryController::class, 'uploadAuditoryEvidence']);
+    Route::post('/auditory/upload-answer-evidence', [AuditoryController::class, 'uploadAnswerEvidence']);
 });
 
 Route::post('/login', [UserController::class, 'login']);
