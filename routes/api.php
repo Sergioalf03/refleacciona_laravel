@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
 
     Route::get('/auditory/list', [AuditoryController::class, 'getList']);
     Route::get('/auditory/detail/{id}', [AuditoryController::class, 'getDetail']);
+    Route::get('/auditory/pdf/{id}', [AuditoryController::class, 'downloadPdf']);
     Route::post('/auditory/import', [AuditoryController::class, 'import']);
     Route::post('/auditory/upload-auditory-evidence', [AuditoryController::class, 'uploadAuditoryEvidence']);
     Route::post('/auditory/upload-answer-evidence', [AuditoryController::class, 'uploadAnswerEvidence']);

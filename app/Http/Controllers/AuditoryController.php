@@ -10,6 +10,7 @@ use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AuditoryController extends Controller
 {
@@ -114,6 +115,143 @@ class AuditoryController extends Controller
                 'sections' => $filteredSections,
             ],
         ]);
+    }
+
+    public function downloadPdf(Request $request, $id) {
+        $userOwner = $request->user()->id;
+
+        $auditory = new Auditory;
+        $auditoryRes = $auditory::where('id', $id)
+            ->where('user_id', $userOwner)
+            ->select(
+                'id',
+                'title',
+                'description',
+                'close_note',
+                'date',
+                'time',
+                'lat',
+                'lng',
+                'status',
+                'creation_date',
+                'update_date',
+            )
+            ->first();
+
+        if (!isset($auditoryRes)) {
+            return abort(409, 'No se encontró la auditoría');
+        }
+
+        $auditoryEvidence = new AuditoryEvidence;
+
+        $auditoryEvidenceRes = $auditoryEvidence::where('auditory_id', $id)
+            ->select(
+                'dir'
+            )
+            ->get();
+
+        $auditoryRes['evidences'] = array_map(function ($e) {
+            return 'storage/auditories/' . $e['dir'] . '.jpeg';
+        }, $auditoryEvidenceRes->toArray());
+
+        $section = new Section;
+        $sectionRes = $sectionRes = $section::select(
+            'id',
+            'uid',
+            'name',
+            'subname',
+            'page',
+            'indx',
+            'status',
+        )
+            ->get();
+
+        $yesCount = 0;
+        $notCount = 0;
+
+        $answer = new Answer;
+
+        foreach ($sectionRes as $key => $section) {
+            $answerRes = $answer::join('questions as q', 'q.id', '=', 'answers.question_id')
+                ->leftJoin('answer_evidence as ae', function ($join) use ($id) {
+                    $join->on('ae.question_id', '=', 'answers.question_id');
+                    $join->on('ae.auditory_id', '=', DB::raw($id));
+                })
+                ->where('q.section_id', $section['id'])
+                ->where('answers.auditory_id', $id)
+                ->select(
+                    'answers.value as answer',
+                    'answers.creation_date as date',
+                    'q.uid',
+                    'q.score',
+                    'q.answers',
+                    'q.sentence',
+                    'q.indx',
+                    'ae.dir',
+                )
+                ->get();
+
+            $section['answers'] = array_map(function ($e) {
+                if (isset($e['dir']) && $e['dir'] != null) {
+                    $e['dir'] = 'storage/answers/' . $e['dir'] . '.jpeg';
+                }
+
+                if (str_starts_with($e['answers'], '[')) {
+                    $answersArray = json_decode($e['answers']);
+
+                    $e['formattedAnswer'] = null;
+                    foreach ($answersArray as $ans) {
+                        if ($ans->v == $e['answer']) {
+                            $e['formattedAnswer'] = $ans->t;
+                            break;
+                        }
+                    }
+
+                    if ($e['formattedAnswer'] == null) {
+                        $e['formattedAnswer'] = $e['answer'];
+                    }
+                } else {
+                    $e['formattedAnswer'] = $e['answer'];
+                }
+
+                return $e;
+            }, $answerRes->toArray());
+
+            foreach($section['answers'] as $ansr) {
+                if ($ansr['score'] != '0') {
+                    if ($ansr['answer'] == '1') {
+                        $yesCount++;
+                    } else {
+                        $notCount++;
+                    }
+                }
+            }
+        }
+
+        $filteredSections = array_filter($sectionRes->toArray(), function ($e) {
+            return isset($e['answers']) && count($e['answers']) > 0;
+        });
+
+        $data = [
+            'auditory' => $auditoryRes,
+            'sections' => $filteredSections,
+            'yesCount' => $yesCount,
+            'notCount' => $notCount,
+        ];
+
+        $pdf = Pdf::loadView('downloads.auditory-donwload', compact('data'));
+        return $pdf->download('auditoría.pdf');
+
+        // return response()->json([
+        //     'code' => 200,
+        //     'message' => 'Success',
+        //     'data' => [
+        //         'auditory' => $auditoryRes,
+        //         'sections' => $filteredSections,
+        //         'yesCount' => $yesCount,
+        //         'notCount' => $notCount,
+        //     ],
+        // ]);
     }
 
     public function import(Request $request) {
