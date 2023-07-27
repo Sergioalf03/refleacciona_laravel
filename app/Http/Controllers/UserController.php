@@ -85,7 +85,7 @@ class UserController extends Controller
         $userRes = $user::where('id', $userId)
             ->update([
                 'name' => $request['name'],
-                'email' => $request['email'],
+                // 'email' => $request['email'],
                 'phone_number' => $request['phone_number'],
             ]);
 
@@ -99,7 +99,7 @@ class UserController extends Controller
     {
         $userId = $request->user()->id;
 
-        Storage::disk('local')->put($userId. '.jpeg', file_get_contents($request['image']));
+        Storage::disk('public')->put('logo/' . $userId. '.jpeg', file_get_contents($request['image']));
 
         return response()->json([
             'code' => 200,

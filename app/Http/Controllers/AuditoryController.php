@@ -7,6 +7,7 @@ use App\Models\AnswerEvidence;
 use App\Models\Auditory;
 use App\Models\AuditoryEvidence;
 use App\Models\Section;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -232,11 +233,25 @@ class AuditoryController extends Controller
             return isset($e['answers']) && count($e['answers']) > 0;
         });
 
+        $user = new User;
+        $userRes = $user::where('id', $userOwner)
+            ->select(
+                'name',
+                'email',
+                'phone_number',
+            )
+            ->first();
+
+        $path = 'logo/' . $userOwner . '.jpeg';
+
+        $userRes['logo'] = Storage::disk('public')->exists($path) ? ('storage/' . $path) : '';
+
         $data = [
             'auditory' => $auditoryRes,
             'sections' => $filteredSections,
             'yesCount' => $yesCount,
             'notCount' => $notCount,
+            'user' => $userRes,
         ];
 
         $pdf = Pdf::loadView('downloads.auditory-donwload', compact('data'));
