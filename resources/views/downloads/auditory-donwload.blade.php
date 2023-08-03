@@ -29,8 +29,9 @@
         <div class="page-break"></div>
 
         <h2 class="text-center"><strong>Ubicación</strong></h2>
+        <h2 class="text-center">https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+555555({{ $data['auditory']['lng'] }},{{ $data['auditory']['lat'] }})/{{ $data['auditory']['lng'] }},{{ $data['auditory']['lat'] }},16,0/300x200?access_token={{ env('MAPBOX_KEY') }}</h2>
         <div class="text-center">
-            <img src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+555555({{ $data['auditory']['lng'] }},{{ $data['auditory']['lat'] }})/{{ $data['auditory']['lng'] }},{{ $data['auditory']['lat'] }},16,0/300x200?access_token={{ env('MAPBOX_KEY') }}" data-holder-rendered=" true" width="50%"></img>
+            <img src="https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+555555({{ $data['auditory']['lng'] }},{{ $data['auditory']['lat'] }})/{{ $data['auditory']['lng'] }},{{ $data['auditory']['lat'] }},16,0/300x200?access_token={{ env('MAPBOX_KEY') }}" data-holder-rendered=" true" width="50%">
         </div>
 
         @if (isset($data['auditory']['description']) && $data['auditory']['description'] != '')
