@@ -14,7 +14,7 @@
 
         @if (isset($data['user']['logo']) && $data['user']['logo'] != '')
         <div style="margin-top: 150px;" class="text-center">
-            <img src="{{ public_path($data['user']['logo']) }}" data-holder-rendered=" true" width="50%">
+            <img src="{{ public_path($data['user']['logo']) }}" data-holder-rendered=" true" width="50%"></img>
         </div>
         <h2 class="text-center mt-4 mb-4" style="font-size: 40px;">{{ $data['auditory']['title'] }}</h2>
         @else
@@ -46,16 +46,16 @@
 
 
         @for($i = 0; $i < count($data['auditory']['evidences']); $i++) <div class="text-center mb-4">
-            <img src="{{ public_path($data['auditory']['evidences'][$i]) }}" data-holder-rendered="true" width="50%"></img>
-    </div>
-    @endfor
+            <img src="{{ public_path($data['auditory']['evidences'][$i]) }}" data-holder-rendered="true" width="50%">
+        </div>@endfor
 
     <div class="page-break"></div>
     @endif
 
     @for($i = 0; $i < count($data['count']); $i++) <div class="mx-2 mt-5 border-bottom">
 
-        <p><strong>De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }}: {{ $data['count'][$i]['users_count'] }} Usuarios, {{ $data['count'][$i]['helmets_count'] }} Cascos</strong></p>
+        <p><strong>Tipo: {{ $data['count'][$i]['vehicleTypeText'] }}. De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }}:</strong></p>
+        <p><strong>{{ $data['count'][$i]['adults_count'] }} Usuarios de cinturón, {{ $data['count'][$i]['belts_count'] }} Cinturones, {{ $data['count'][$i]['child_count'] }} Usuarios de silla, {{ $data['count'][$i]['chairs_count'] }} Sillas, {{ $data['count'][$i]['overuse_count'] }} Asientos compartidos</strong></p>
 
     @endfor
 

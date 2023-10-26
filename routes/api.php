@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuditoryController;
+use App\Http\Controllers\BeltAuditoryController;
 use App\Http\Controllers\HelmetAuditoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VersionController;
@@ -44,6 +45,12 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
     Route::get('/helmet-auditory/pdf/{id}', [HelmetAuditoryController::class, 'downloadPdf']);
     Route::post('/helmet-auditory/import', [HelmetAuditoryController::class, 'import']);
     Route::post('/helmet-auditory/upload-auditory-evidence', [HelmetAuditoryController::class, 'uploadAuditoryEvidence']);
+
+    Route::get('/belt-auditory/list', [BeltAuditoryController::class, 'getList']);
+    Route::get('/belt-auditory/detail/{id}', [BeltAuditoryController::class, 'getDetail']);
+    Route::get('/belt-auditory/pdf/{id}', [BeltAuditoryController::class, 'downloadPdf']);
+    Route::post('/belt-auditory/import', [BeltAuditoryController::class, 'import']);
+    Route::post('/belt-auditory/upload-auditory-evidence', [BeltAuditoryController::class, 'uploadAuditoryEvidence']);
 });
 
 Route::post('/login', [UserController::class, 'login']);
