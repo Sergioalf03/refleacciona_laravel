@@ -125,7 +125,7 @@ class BeltAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/auditories/' . $e['dir'] . '.jpeg';
+            return 'storage/belt/' . $e['dir'] . '.jpeg';
         }, $auditoryEvidenceRes->toArray());
 
         $count = new beltAuditoryCouht;
@@ -227,7 +227,7 @@ class BeltAuditoryController extends Controller
     {
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
 
-        if (!Storage::disk('public')->put('auditories/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
+        if (!Storage::disk('public')->put('belt/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
             return abort(409, 'No se pudo guardar la imagen');
         };
 

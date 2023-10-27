@@ -61,25 +61,19 @@ class GeneralCountAuditoryController extends Controller
 
         $auditoryEvidence = new GeneralCountAuditoryEvidence;
 
-        $auditoryRes['evidences'] = $auditoryEvidence::where('belt_auditory_id', $id)
+        $auditoryRes['evidences'] = $auditoryEvidence::where('gc_auditory_id', $id)
             ->select(
                 'dir'
             )
             ->get();
 
         $counts = new GeneralCountAuditoryCount;
-        $auditoryRes['counts'] = $counts::where('belt_auditory_id', $id)
+        $auditoryRes['counts'] = $counts::where('general_count_auditory_id', $id)
             ->select(
                 'id',
                 'vehicle_type',
                 'origin',
                 'destination',
-                'adults_count',
-                'belts_count',
-                'child_count',
-                'chairs_count',
-                'coopilot',
-                'overuse_count',
             )
             ->get();
 
@@ -118,14 +112,14 @@ class GeneralCountAuditoryController extends Controller
 
         $auditoryEvidence = new GeneralCountAuditoryEvidence;
 
-        $auditoryEvidenceRes = $auditoryEvidence::where('belt_auditory_id', $id)
+        $auditoryEvidenceRes = $auditoryEvidence::where('gc_auditory_id', $id)
             ->select(
                 'dir'
             )
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/auditories/' . $e['dir'] . '.jpeg';
+            return 'storage/general/' . $e['dir'] . '.jpeg';
         }, $auditoryEvidenceRes->toArray());
 
         $count = new GeneralCountAuditoryCount;
@@ -133,12 +127,6 @@ class GeneralCountAuditoryController extends Controller
             'vehicle_type',
             'origin',
             'destination',
-            'adults_count',
-            'belts_count',
-            'child_count',
-            'chairs_count',
-            'coopilot',
-            'overuse_count',
         )
             ->get();
 
@@ -167,7 +155,7 @@ class GeneralCountAuditoryController extends Controller
             'user' => $userRes,
         ];
 
-        $pdf = Pdf::loadView('downloads.belt-auditory-download', compact('data'));
+        $pdf = Pdf::loadView('downloads.general-count-auditory-download', compact('data'));
         return $pdf->download('auditoría.pdf');
 
         // return true;
@@ -251,7 +239,7 @@ class GeneralCountAuditoryController extends Controller
     {
         $newDir = $request['gc_auditory_id'] . '-' . $request['dir'];
 
-        if (!Storage::disk('public')->put('auditories/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
+        if (!Storage::disk('public')->put('general/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
             return abort(409, 'No se pudo guardar la imagen');
         };
 

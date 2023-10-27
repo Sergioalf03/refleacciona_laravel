@@ -121,7 +121,7 @@ class HelmetAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/auditories/' . $e['dir'] . '.jpeg';
+            return 'storage/helmet/' . $e['dir'] . '.jpeg';
         }, $auditoryEvidenceRes->toArray());
 
         $count = new HelmetAuditoryCount;
@@ -209,7 +209,7 @@ class HelmetAuditoryController extends Controller
     {
         $newDir = $request['helmet_auditory_id'] . '-' . $request['dir'];
 
-        if (!Storage::disk('public')->put('auditories/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
+        if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
             return abort(409, 'No se pudo guardar la imagen');
         };
 
