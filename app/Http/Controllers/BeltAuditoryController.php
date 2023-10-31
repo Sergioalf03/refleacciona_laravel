@@ -228,12 +228,15 @@ class BeltAuditoryController extends Controller
     public function uploadAuditoryEvidence(Request $request)
     {
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
+        $completeDir = 'belt/' . $newDir . '.jpeg';
+
+        return abort(409, $completeDir);
         try {
-            if (!Storage::disk('public')->put('belt/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
+            if (!Storage::disk('public')->put($completeDir, file_get_contents($request['image']))) {
                 return abort(409, 'No se pudo guardar la imagen');
             };
         } catch (Exception $e) {
-            return abort(409, 'dir ' . 'belt/' . $newDir . '.jpeg');
+
         }
 
         $auditoryEvidence = new beltAuditoryEvidence;
