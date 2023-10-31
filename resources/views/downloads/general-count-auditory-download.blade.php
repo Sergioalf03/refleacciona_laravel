@@ -52,11 +52,16 @@
     <div class="page-break"></div>
     @endif
 
-    @for($i = 0; $i < count($data['count']); $i++) <div class="mx-2 mt-5 border-bottom">
+    @for($i = 0; $i < count($data['count']); $i++)
 
-        <p><strong>Tipo: {{ $data['count'][$i]['vehicleTypeText'] }}. De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }}:</strong></p>
+        <div class="mx-2 mt-5 border-bottom">
 
-        @endfor
+            <p>
+                <strong>Tipo: {{ $data['count'][$i]['vehicleTypeText'] }}. De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }} </strong>
+            </p>
+
+        </div>
+    @endfor
 
         <div class="mt-4"></div>
         <div class="mt-4"></div>

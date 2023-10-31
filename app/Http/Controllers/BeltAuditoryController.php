@@ -129,7 +129,8 @@ class BeltAuditoryController extends Controller
         }, $auditoryEvidenceRes->toArray());
 
         $count = new beltAuditoryCouht;
-        $countRes = $count::select(
+        $countRes = $count::where('belt_auditory_id', $id)
+            ->select(
                 'vehicle_type',
                 'origin',
                 'destination',

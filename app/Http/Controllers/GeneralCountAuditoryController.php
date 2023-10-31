@@ -123,11 +123,12 @@ class GeneralCountAuditoryController extends Controller
         }, $auditoryEvidenceRes->toArray());
 
         $count = new GeneralCountAuditoryCount;
-        $countRes = $count::select(
-            'vehicle_type',
-            'origin',
-            'destination',
-        )
+        $countRes = $count::where('general_count_auditory_id', $id)
+            ->select(
+                'vehicle_type',
+                'origin',
+                'destination',
+            )
             ->get();
 
         foreach ($countRes as $count) {
