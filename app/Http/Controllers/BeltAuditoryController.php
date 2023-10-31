@@ -7,6 +7,7 @@ use App\Models\beltAuditoryCouht;
 use App\Models\beltAuditoryEvidence;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -227,10 +228,13 @@ class BeltAuditoryController extends Controller
     public function uploadAuditoryEvidence(Request $request)
     {
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
-
-        if (!Storage::disk('public')->put('belt/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        };
+        try {
+            if (!Storage::disk('public')->put('belt/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
+                return abort(409, 'No se pudo guardar la imagen');
+            };
+        } catch (Exception $e) {
+            return abort(409, 'dir ' . 'belt/' . $newDir . '.jpeg');
+        }
 
         $auditoryEvidence = new beltAuditoryEvidence;
         $auditoryEvidenceRes = $auditoryEvidence::create([
