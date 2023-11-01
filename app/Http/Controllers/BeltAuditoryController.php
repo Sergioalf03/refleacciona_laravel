@@ -230,7 +230,7 @@ class BeltAuditoryController extends Controller
         return response()->json([
             'code' => 200,
             'message' => 'Success',
-            'data' => $request->all(),
+            'data' => file_get_contents($request['image']),
         ], 200);
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
         $completeDir = 'belt/' . $newDir . '.jpeg';
