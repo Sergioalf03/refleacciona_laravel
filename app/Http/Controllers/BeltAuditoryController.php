@@ -227,6 +227,13 @@ class BeltAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
+        if (!file_exists($request['image'])) {
+            return response()->json([
+                'code' => 409,
+                'message' => 'No se recibió el archivo',
+                'data' => $request['image'],
+            ], 409);
+        }
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
         $completeDir = 'belt/' . $newDir . '.jpeg';
 
