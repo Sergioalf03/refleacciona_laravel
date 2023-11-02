@@ -232,6 +232,7 @@ class BeltAuditoryController extends Controller
                 'code' => 409,
                 'message' => 'No se recibió el archivo',
                 'data' => $request->all(),
+                'file' => $request->file('image')->getClientOriginalName()
             ], 409);
         }
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
