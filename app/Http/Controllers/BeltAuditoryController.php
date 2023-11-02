@@ -227,7 +227,7 @@ class BeltAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
-        if (!file_exists($request['image'])) {
+        if (!file_exists($request->file('image'))) {
             return response()->json([
                 'code' => 409,
                 'message' => 'No se recibió el archivo',
