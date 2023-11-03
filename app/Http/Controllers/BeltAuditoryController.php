@@ -238,7 +238,7 @@ class BeltAuditoryController extends Controller
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
         $completeDir = 'belt/' . $newDir . '.jpeg';
 
-        if (!Storage::disk('public')->put($completeDir, file_get_contents($request['image']))) {
+        if (!Storage::disk('public')->put($completeDir, base64_decode($request['image']))) {
             return abort(409, 'No se pudo guardar la imagen');
         };
 
