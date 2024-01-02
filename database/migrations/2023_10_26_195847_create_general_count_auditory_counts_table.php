@@ -15,9 +15,18 @@ return new class extends Migration
     {
         Schema::create('general_count_auditory_counts', function (Blueprint $table) {
             $table->id();
-            $table->integer('vehicle_type');
-            $table->integer('origin');
-            $table->integer('destination');
+            $table->integer('count1');
+            $table->integer('count2');
+            $table->integer('count3');
+            $table->integer('count4');
+            $table->integer('count5');
+            $table->integer('count6');
+            $table->integer('count7');
+            $table->integer('count8');
+            $table->integer('count9');
+            $table->integer('count10');
+            $table->integer('count11');
+            $table->integer('count12');
             $table->string('creation_date');
             $table->unsignedBigInteger('general_count_auditory_id');
 

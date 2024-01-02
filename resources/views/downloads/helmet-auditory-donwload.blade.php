@@ -55,7 +55,8 @@
 
     @for($i = 0; $i < count($data['count']); $i++) <div class="mx-2 mt-5 border-bottom">
 
-        <p><strong>De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }}: {{ $data['count'][$i]['users_count'] }} Usuarios, {{ $data['count'][$i]['helmets_count'] }} Cascos</strong></p>
+        <p><strong>{{ $data['count'][$i]['users_count'] }} Sin Casco</strong></p>
+        <p><strong>{{ $data['count'][$i]['helmets_count'] }} Con Cascos</strong></p>
 
     @endfor
 
