@@ -54,8 +54,9 @@
 
     @for($i = 0; $i < count($data['count']); $i++) <div class="mx-2 mt-5 border-bottom">
 
-        <p><strong>Tipo: {{ $data['count'][$i]['vehicleTypeText'] }}. De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }}:</strong></p>
-        <p><strong>{{ $data['count'][$i]['adults_count'] }} Usuarios de cinturón, {{ $data['count'][$i]['belts_count'] }} Cinturones, {{ $data['count'][$i]['child_count'] }} Usuarios de silla, {{ $data['count'][$i]['chairs_count'] }} Sillas, {{ $data['count'][$i]['overuse_count'] }} Asientos compartidos</strong></p>
+        <p><strong>{{ $data['count'][$i]['adults_count'] }} Sin Cinturón</p>
+        <p><strong>{{ $data['count'][$i]['belts_count'] }} Con Cinturón</strong></p>
+        <p><strong>{{ $data['count'][$i]['child_count'] }} Con Silla de Retención</strong></p>
 
     @endfor
 

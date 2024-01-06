@@ -7,6 +7,7 @@ use App\Models\beltAuditoryCouht;
 use App\Models\beltAuditoryEvidence;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -129,7 +130,8 @@ class BeltAuditoryController extends Controller
         }, $auditoryEvidenceRes->toArray());
 
         $count = new beltAuditoryCouht;
-        $countRes = $count::select(
+        $countRes = $count::where('belt_auditory_id', $id)
+            ->select(
                 'vehicle_type',
                 'origin',
                 'destination',
@@ -225,11 +227,21 @@ class BeltAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
+        if (!file_exists($request->file('image'))) {
+            return response()->json([
+                'code' => 409,
+                'message' => 'No se recibió el archivo',
+                'data' => $request->all(),
+                'file' => $request->file('image')->getClientOriginalName()
+            ], 409);
+        }
         $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
+        $completeDir = 'belt/' . $newDir . '.jpeg';
 
-        if (!Storage::disk('public')->put('belt/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
+        if (!Storage::disk('public')->put($completeDir, base64_decode($request['image']))) {
             return abort(409, 'No se pudo guardar la imagen');
         };
+
 
         $auditoryEvidence = new beltAuditoryEvidence;
         $auditoryEvidenceRes = $auditoryEvidence::create([

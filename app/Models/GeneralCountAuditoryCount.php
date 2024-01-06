@@ -12,9 +12,18 @@ class GeneralCountAuditoryCount extends Model
     protected $table = 'general_count_auditory_counts';
 
     protected $fillable = [
-        'origin',
-        'destination',
-        'vehicle_type',
+        'count1',
+        'count2',
+        'count3',
+        'count4',
+        'count5',
+        'count6',
+        'count7',
+        'count8',
+        'count9',
+        'count10',
+        'count11',
+        'count12',
         'creation_date',
         'general_count_auditory_id',
     ];

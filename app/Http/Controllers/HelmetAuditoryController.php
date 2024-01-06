@@ -125,7 +125,8 @@ class HelmetAuditoryController extends Controller
         }, $auditoryEvidenceRes->toArray());
 
         $count = new HelmetAuditoryCount;
-        $countRes = $count::select(
+        $countRes = $count::where('helmet_auditory_id', $id)
+            ->select(
                 'origin',
                 'destination',
                 'users_count',

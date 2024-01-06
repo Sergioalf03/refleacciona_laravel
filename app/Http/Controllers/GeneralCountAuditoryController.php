@@ -71,9 +71,18 @@ class GeneralCountAuditoryController extends Controller
         $auditoryRes['counts'] = $counts::where('general_count_auditory_id', $id)
             ->select(
                 'id',
-                'vehicle_type',
-                'origin',
-                'destination',
+                'count1',
+                'count2',
+                'count3',
+                'count4',
+                'count5',
+                'count6',
+                'count7',
+                'count8',
+                'count9',
+                'count10',
+                'count11',
+                'count12',
             )
             ->get();
 
@@ -123,18 +132,23 @@ class GeneralCountAuditoryController extends Controller
         }, $auditoryEvidenceRes->toArray());
 
         $count = new GeneralCountAuditoryCount;
-        $countRes = $count::select(
-            'vehicle_type',
-            'origin',
-            'destination',
-        )
+        $countRes = $count::where('general_count_auditory_id', $id)
+            ->select(
+                'id',
+                'count1',
+                'count2',
+                'count3',
+                'count4',
+                'count5',
+                'count6',
+                'count7',
+                'count8',
+                'count9',
+                'count10',
+                'count11',
+                'count12',
+            )
             ->get();
-
-        foreach ($countRes as $count) {
-            $count['originText'] = $this->getDirection($count['origin']);
-            $count['destinationText'] = $this->getDirection($count['destination']);
-            $count['vehicleTypeText'] = $this->getVehicleType($count['vehicle_type']);
-        }
 
         $user = new User;
         $userRes = $user::where('id', $userOwner)

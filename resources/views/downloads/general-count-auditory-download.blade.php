@@ -52,11 +52,49 @@
     <div class="page-break"></div>
     @endif
 
-    @for($i = 0; $i < count($data['count']); $i++) <div class="mx-2 mt-5 border-bottom">
+    @for($i = 0; $i < count($data['count']); $i++)
 
-        <p><strong>Tipo: {{ $data['count'][$i]['vehicleTypeText'] }}. De {{ $data['count'][$i]['originText'] }} a {{ $data['count'][$i]['destinationText'] }}:</strong></p>
+        <div class="mx-2 mt-5 border-bottom">
 
-        @endfor
+            <p>
+                <strong>{{ $data['count'][$i]['count1'] }} Urbano</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count2'] }} Sedán</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count3'] }} Berlina</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count4'] }} Hatchback</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count5'] }} Cupé</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count6'] }} Descapotable</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count7'] }} Deportivo</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count8'] }} Todoterreno</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count9'] }} Monovolumen</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count10'] }} SUV</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count11'] }} Furgoneta</strong>
+            </p>
+            <p>
+                <strong>{{ $data['count'][$i]['count12'] }} Pickup</strong>
+            </p>
+
+        </div>
+    @endfor
 
         <div class="mt-4"></div>
         <div class="mt-4"></div>
