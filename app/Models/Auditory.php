@@ -10,13 +10,17 @@ class Auditory extends Model
     use HasFactory;
 
     protected $fillable = [
+        'title',
+        'description',
+        'close_note',
         'date',
-        'street',
-        'street_type',
-        'street_way',
+        'time',
         'lat',
         'lng',
         'status',
+        'creation_date',
+        'update_date',
+        'external_id',
         'user_id',
     ];
 }

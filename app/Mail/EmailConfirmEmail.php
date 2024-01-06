@@ -13,16 +13,16 @@ class EmailConfirmEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data;
+    public $code;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct($code)
     {
-        $this->data = $data;
+        $this->code = $code;
     }
 
     /**
@@ -60,16 +60,16 @@ class EmailConfirmEmail extends Mailable
     }
 
     public function build() {
-        $address = 'desarrollo.refleacciona@gmail.com';
+        $address = env('MAIL_FROM_ADDRESS');
         $subject = 'Confirmación de correo';
-        $name = 'Sergio Alfaro';
+        $name = env('MAIL_FROM_NAME');
 
         return $this->view('emails.email_confirmation')
             ->from($address, $name)
-            ->cc($address, $name)
-            ->bcc($address, $name)
-            ->replyTo($address, $name)
+            // ->cc($address, $name)
+            // ->bcc($address, $name)
+            // ->replyTo($address, $name)
             ->subject($subject)
-            ->with(['message' => $this->data['message']]);
+            ->with(['message' => $this->code]);
     }
 }

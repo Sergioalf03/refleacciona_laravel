@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\AuditoryController;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\BeltAuditoryController;
+use App\Http\Controllers\GeneralCountAuditoryController;
+use App\Http\Controllers\HelmetAuditoryController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VersionController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
-use App\Mail\EmailConfirmEmail;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,199 +22,46 @@ use Illuminate\Support\Facades\Mail;
 */
 
 Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]], function() {
-    Route::get('/logout', function (Request $request) {
-        $request->user()->tokens()->where('id', request()->user()->currentAccessToken()->id)->delete();
+    Route::get('/logout', [UserController::class, 'logout']);
+    Route::get('/logout-all-devices', [UserController::class, 'logoutAllDevices']);
+    Route::get('/token-list', [UserController::class, 'tokenList']);
+    Route::get('/valid-token', [UserController::class, 'validToken']);
+    Route::get('/user-data', [UserController::class, 'userData']);
+    Route::get('/user-form', [UserController::class, 'userForm']);
+    Route::post('/update-user', [UserController::class, 'updateUser']);
+    Route::post('/update-logo', [UserController::class, 'updateLogo']);
 
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-        ], 200);
-    });
+    Route::get('/version/last', [VersionController::class, 'getLastVersion']);
+    Route::get('/version/get-last-version', [VersionController::class, 'getNewRows']);
 
-    Route::get('/logout-all-devices', function(Request $request) {
-        $request->user()->tokens()->delete();
+    Route::get('/auditory/list', [AuditoryController::class, 'getList']);
+    Route::get('/auditory/detail/{id}', [AuditoryController::class, 'getDetail']);
+    Route::get('/auditory/pdf/{id}', [AuditoryController::class, 'downloadPdf']);
+    Route::post('/auditory/import', [AuditoryController::class, 'import']);
+    Route::post('/auditory/upload-auditory-evidence', [AuditoryController::class, 'uploadAuditoryEvidence']);
+    Route::post('/auditory/upload-answer-evidence', [AuditoryController::class, 'uploadAnswerEvidence']);
 
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-        ], 200);
-    });
+    Route::get('/helmet-auditory/list', [HelmetAuditoryController::class, 'getList']);
+    Route::get('/helmet-auditory/detail/{id}', [HelmetAuditoryController::class, 'getDetail']);
+    Route::get('/helmet-auditory/pdf/{id}', [HelmetAuditoryController::class, 'downloadPdf']);
+    Route::post('/helmet-auditory/import', [HelmetAuditoryController::class, 'import']);
+    Route::post('/helmet-auditory/upload-auditory-evidence', [HelmetAuditoryController::class, 'uploadAuditoryEvidence']);
 
-    Route::get('/token-list', function (Request $request) {
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-            'data' => $request->user()->tokens(),
-        ], 200);
-    });
+    Route::get('/belt-auditory/list', [BeltAuditoryController::class, 'getList']);
+    Route::get('/belt-auditory/detail/{id}', [BeltAuditoryController::class, 'getDetail']);
+    Route::get('/belt-auditory/pdf/{id}', [BeltAuditoryController::class, 'downloadPdf']);
+    Route::post('/belt-auditory/import', [BeltAuditoryController::class, 'import']);
+    Route::post('/belt-auditory/upload-auditory-evidence', [BeltAuditoryController::class, 'uploadAuditoryEvidence']);
 
-    Route::get('/valid-token', function (Request $request) {
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-            'data' => [
-                'validToken' => true,
-            ],
-        ], 200);
-    });
-
-    Route::get('/user-data', function (Request $request) {
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-            'data' => [
-                'userName' => $request->user()->name,
-                'userEmail' => $request->user()->email,
-            ],
-        ], 200);
-    });
-
-    Route::post('/auditory/save', [AuditoryController::class, 'saveAuditory']);
-    Route::post('/auditory/update/{id}', [AuditoryController::class, 'updateAuditory']);
-    Route::get('/auditory/list', [AuditoryController::class, 'getAuditoriesList']);
-    Route::get('/auditory/count', [AuditoryController::class, 'getAuditoriesCount']);
-    Route::get('/auditory/form/{id}', [AuditoryController::class, 'getForm']);
+    Route::get('/general-count-auditory/list', [GeneralCountAuditoryController::class, 'getList']);
+    Route::get('/general-count-auditory/detail/{id}', [GeneralCountAuditoryController::class, 'getDetail']);
+    Route::get('/general-count-auditory/pdf/{id}', [GeneralCountAuditoryController::class, 'downloadPdf']);
+    Route::post('/general-count-auditory/import', [GeneralCountAuditoryController::class, 'import']);
+    Route::post('/general-count-auditory/upload-auditory-evidence', [GeneralCountAuditoryController::class, 'uploadAuditoryEvidence']);
 });
 
-Route::post('/login', function (Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        'device_name' => 'required',
-    ]);
-
-    $user = User::where('email', $request->email)->first();
-
-    // return $user;
-
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return abort(409, 'Las credenciales son incorrectas');
-    }
-
-    return response()->json([
-        'code' => 200,
-        'message' => 'Success',
-        'data' => [
-            'token' => $user->createToken($request->device_name)->plainTextToken,
-            'userName' =>  $user->name,
-            'userEmail' =>  $user->email,
-        ],
-    ], 200);
-});
-
-route::post('/register', function(Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        'phone_number' => 'required',
-        'key' => 'required',
-    ]);
-    // $data = ['message' => 'Bienvenido!'];
-
-    // $result = Mail::to('sergioalf03@gmail.com')->send(new EmailConfirmEmail($data));
-
-    // return $result;
-
-    $userDb = new user;
-    $userResult = $userDb::where('email', $request['email'])
-        ->first();
-
-    if (isset($userResult)) {
-        return abort(409, 'El correo ya está registrado');
-    }
-
-    $randomString = mt_rand(100000, 999999) . '';
-
-    $userResult = $userDb::create([
-        'name' => $request['name'],
-        'email' => $request['email'],
-        'phone_number' => $request['phone_number'],
-        'password' => Hash::make($request['password']),
-        'key' => Hash::make($randomString),
-        'img' => 'nop', // to save img
-    ]);
-
-    return response()->json([
-        'code' => 200,
-        'message' => 'Success',
-        'data' => [
-            'id' => $userResult['id'],
-            'token' => $randomString,
-        ],
-    ], 200);
-});
-
-route::post('/confirm-email', function(Request $request) {
-    $user = new User;
-    $userResult = $user::where('id', $request['id'])
-        ->where('status', 2)
-        ->first();
-
-    if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
-        return abort(409, 'No se encontró el usuario');
-    }
-
-    $userResult->fill([
-        'status' => 1,
-        'key' => 'nop',
-    ])->save();
-
-    return response()->json([
-        'code' => 200,
-        'message' => 'Success',
-    ], 200);
-});
-
-route::post('/forget-password', function(Request $request) {
-    $userDb = new user;
-    $userResult = $userDb::where('email', $request['email'])
-        ->where('status', 1)
-        ->select('id')
-        ->first();
-
-    if (!isset($userResult)) {
-        return abort(409, 'No se encontró el usuario');
-    }
-
-    $randomString = mt_rand(100000, 999999) . '';
-
-    $userDb::where('email', $request['email'])
-        ->update([
-            'key' => Hash::make($randomString),
-        ]);
-
-    return response()->json([
-        'code' => 200,
-        'message' => 'Success',
-        'data' => [
-            'id' => $userResult['id'],
-            'token' => $randomString,
-        ],
-    ], 200);
-});
-
-route::post('/change-password', function(Request $request) {
-    $userDb = new user;
-    $userResult = $userDb::where('email', $request['email'])
-        ->where('status', 1)
-        ->select(
-            'key',
-            'password',
-        )
-        ->first();
-
-    if (!$userResult || !Hash::check($request['token'], $userResult->key)) {
-        return abort(409, 'No se encontró el usuario');
-    }
-
-    $userDb::where('email', $request['email'])
-        ->update([
-            'key' => 'nop',
-            'password' => Hash::make($request['password']),
-        ]);
-
-    return response()->json([
-        'code' => 200,
-        'message' => 'Success',
-    ], 200);
-});
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/confirm-email', [UserController::class, 'confirmEmail']);
+Route::post('/forget-password', [UserController::class, 'forgetPassword']);
+Route::post('/change-password', [UserController::class, 'changePassword']);
