@@ -8,10 +8,208 @@ use App\Models\GeneralCountAuditoryEvidence;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class GeneralCountAuditoryController extends Controller
 {
+
+    // Web Panel
+
+    public function getPaginatedList(Request $request)
+    {
+        $pageSize = $request['page_size'];
+        $pageIndex = $request['page_index'];
+        $orderColumn = $request['order_column'];
+        $orderDirection = $request['order_direction'];
+        $searchKey = $request['search_key'];
+
+        $havingQuery = '';
+
+        $hasSeachKey = $searchKey != '!';
+
+        if ($hasSeachKey) {
+            $havingQuery = ' WHERE ';
+
+            $stringConnector = '';
+
+            $havingQuery .= $stringConnector . '(title like "%' . $searchKey . '%") '; // description, user
+        }
+
+
+        $total = 0;
+        $queryRes = null;
+
+        $orderPageQuery = ' ORDER BY ' . $orderColumn . ' ' . $orderDirection . '
+            LIMIT ' . $pageSize . '
+            OFFSET ' . $pageSize * $pageIndex . ';';
+
+        $query = 'SELECT
+            a.id,
+            a.title,
+            a.description,
+            a.date,
+            a.time,
+            a.lat,
+            a.lng,
+            u.name as user
+        FROM general_count_auditories a
+        JOIN users u ON u.id = a.user_id';
+
+        $pageQuery = $query . $havingQuery . $orderPageQuery;
+        $totalQuery = $query . $havingQuery;
+
+        $queryRes = DB::select($pageQuery);
+        $total = count(DB::select($totalQuery));
+
+        return [
+            'code' => 200,
+            'message' => 'Success',
+            'data' => [
+                'list' => $queryRes,
+                'total' => $total,
+            ],
+        ];
+    }
+
+    public function getWebDetail(Request $request, $id)
+    {
+        $auditory = new GeneralCountAuditory;
+        $auditoryRes = $auditory::where('id', $id)
+            ->select(
+                'id',
+                'title',
+                'description',
+                'close_note',
+                'date',
+                'time',
+                'lat',
+                'lng',
+                'status',
+                'creation_date',
+                'update_date',
+            )
+            ->first();
+
+        if (!isset($auditoryRes)) {
+            return abort(409, 'No se encontró la auditoría');
+        }
+
+        $auditoryEvidence = new GeneralCountAuditoryEvidence;
+
+        $auditoryRes['evidences'] = $auditoryEvidence::where('gc_auditory_id', $id)
+            ->select(
+                'dir'
+            )
+            ->get();
+
+        $counts = new GeneralCountAuditoryCount;
+        $auditoryRes['counts'] = $counts::where('general_count_auditory_id', $id)
+            ->select(
+                'id',
+                'count1',
+                'count2',
+                'count3',
+                'count4',
+                'count5',
+                'count6',
+                'count7',
+                'count8',
+                'count9',
+                'count10',
+                'count11',
+                'count12',
+            )
+            ->get();
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => $auditoryRes,
+        ]);
+    }
+
+    public function downloadWebPdf(Request $request, $id)
+    {
+        $auditory = new GeneralCountAuditory;
+        $auditoryRes = $auditory::where('id', $id)
+            ->select(
+                'id',
+                'title',
+                'description',
+                'close_note',
+                'date',
+                'time',
+                'lat',
+                'lng',
+                'status',
+                'creation_date',
+                'update_date',
+                'user_id',
+            )
+            ->first();
+
+        if (!isset($auditoryRes)) {
+            return abort(409, 'No se encontró la auditoría');
+        }
+
+        $userOwner = $auditoryRes['user_id'];
+
+        $auditoryEvidence = new GeneralCountAuditoryEvidence;
+
+        $auditoryEvidenceRes = $auditoryEvidence::where('gc_auditory_id', $id)
+            ->select(
+                'dir'
+            )
+            ->get();
+
+        $auditoryRes['evidences'] = array_map(function ($e) {
+            return 'storage/general/' . $e['dir'] . '.jpeg';
+        }, $auditoryEvidenceRes->toArray());
+
+        $count = new GeneralCountAuditoryCount;
+        $countRes = $count::where('general_count_auditory_id', $id)
+            ->select(
+                'id',
+                'count1',
+                'count2',
+                'count3',
+                'count4',
+                'count5',
+                'count6',
+                'count7',
+                'count8',
+                'count9',
+                'count10',
+                'count11',
+                'count12',
+            )
+            ->get();
+
+        $user = new User;
+        $userRes = $user::where('id', $userOwner)
+            ->select(
+                'name',
+                'email',
+                'phone_number',
+            )
+            ->first();
+
+        $path = 'logo/' . $userOwner . '.jpeg';
+
+        $userRes['logo'] = Storage::disk('public')->exists($path) ? ('storage/' . $path) : '';
+
+        $data = [
+            'auditory' => $auditoryRes,
+            'count' => $countRes,
+            'user' => $userRes,
+        ];
+
+        $pdf = Pdf::loadView('downloads.general-count-auditory-download', compact('data'));
+        return $pdf->download('auditoría.pdf');
+    }
+
+    // Mobile app
     public function getList(Request $request)
     {
         $userOwner = $request->user()->id;
@@ -171,19 +369,6 @@ class GeneralCountAuditoryController extends Controller
 
         $pdf = Pdf::loadView('downloads.general-count-auditory-download', compact('data'));
         return $pdf->download('auditoría.pdf');
-
-        // return true;
-
-        // return response()->json([
-        //     'code' => 200,
-        //     'message' => 'Success',
-        //     'data' => [
-        //         'auditory' => $auditoryRes,
-        //         'sections' => $filteredSections,
-        //         'yesCount' => $yesCount,
-        //         'notCount' => $notCount,
-        //     ],
-        // ]);
     }
 
     private function getDirection($index)

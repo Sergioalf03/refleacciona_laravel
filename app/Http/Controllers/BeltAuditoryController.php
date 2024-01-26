@@ -9,10 +9,196 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BeltAuditoryController extends Controller
 {
+
+    // Web Panel
+
+    public function getPaginatedList(Request $request)
+    {
+        $pageSize = $request['page_size'];
+        $pageIndex = $request['page_index'];
+        $orderColumn = $request['order_column'];
+        $orderDirection = $request['order_direction'];
+        $searchKey = $request['search_key'];
+
+        $havingQuery = '';
+
+        $hasSeachKey = $searchKey != '!';
+
+        if ($hasSeachKey) {
+            $havingQuery = ' WHERE ';
+
+            $stringConnector = '';
+
+            $havingQuery .= $stringConnector . '(title like "%' . $searchKey . '%") '; // description, user
+        }
+
+
+        $total = 0;
+        $queryRes = null;
+
+        $orderPageQuery = ' ORDER BY ' . $orderColumn . ' ' . $orderDirection . '
+            LIMIT ' . $pageSize . '
+            OFFSET ' . $pageSize * $pageIndex . ';';
+
+        $query = 'SELECT
+            a.id,
+            a.title,
+            a.description,
+            a.date,
+            a.time,
+            a.lat,
+            a.lng,
+            u.name as user
+        FROM belt_auditory a
+        JOIN users u ON u.id = a.user_id';
+
+        $pageQuery = $query . $havingQuery . $orderPageQuery;
+        $totalQuery = $query . $havingQuery;
+
+        $queryRes = DB::select($pageQuery);
+        $total = count(DB::select($totalQuery));
+
+        return [
+            'code' => 200,
+            'message' => 'Success',
+            'data' => [
+                'list' => $queryRes,
+                'total' => $total,
+            ],
+        ];
+    }
+
+    public function getWebDetail(Request $request, $id)
+    {
+
+        $auditory = new BeltAuditory;
+        $auditoryRes = $auditory::where('id', $id)
+            ->select(
+                'id',
+                'title',
+                'description',
+                'close_note',
+                'date',
+                'time',
+                'lat',
+                'lng',
+                'status',
+                'creation_date',
+                'update_date',
+            )
+            ->first();
+
+        if (!isset($auditoryRes)) {
+            return abort(409, 'No se encontró la auditoría');
+        }
+
+        $auditoryEvidence = new BeltAuditoryEvidence;
+
+        $auditoryRes['evidences'] = $auditoryEvidence::where('belt_auditory_id', $id)
+            ->select(
+                'dir'
+            )
+            ->get();
+
+
+        $counts = new beltAuditoryCouht;
+        $auditoryRes['counts'] = $counts::where('belt_auditory_id', $id)
+            ->select(
+                'adults_count',
+                'belts_count',
+                'chairs_count',
+            )
+            ->get();
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+            'data' => $auditoryRes,
+        ]);
+    }
+
+    public function downloadWebPdf(Request $request, $id)
+    {
+        $auditory = new BeltAuditory;
+        $auditoryRes = $auditory::where('id', $id)
+            ->select(
+                'id',
+                'title',
+                'description',
+                'close_note',
+                'date',
+                'time',
+                'lat',
+                'lng',
+                'status',
+                'creation_date',
+                'update_date',
+                'user_id',
+            )
+            ->first();
+
+        if (!isset($auditoryRes)) {
+            return abort(409, 'No se encontró la auditoría');
+        }
+
+        $userOwner = $auditoryRes['user_id'];
+
+        $auditoryEvidence = new BeltAuditoryEvidence;
+
+        $auditoryEvidenceRes = $auditoryEvidence::where('belt_auditory_id', $id)
+            ->select(
+                'dir'
+            )
+            ->get();
+
+        $auditoryRes['evidences'] = array_map(function ($e) {
+            return 'storage/belt/' . $e['dir'] . '.jpeg';
+        }, $auditoryEvidenceRes->toArray());
+
+        $count = new beltAuditoryCouht;
+        $countRes = $count::where('belt_auditory_id', $id)
+            ->select(
+                'adults_count',
+                'belts_count',
+                'chairs_count',
+            )
+            ->get();
+
+        foreach ($countRes as $count) {
+            $count['originText'] = $this->getDirection($count['origin']);
+            $count['destinationText'] = $this->getDirection($count['destination']);
+        }
+
+        $user = new User;
+        $userRes = $user::where('id', $userOwner)
+            ->select(
+                'name',
+                'email',
+                'phone_number',
+            )
+            ->first();
+
+        $path = 'logo/' . $userOwner . '.jpeg';
+
+        $userRes['logo'] = Storage::disk('public')->exists($path) ? ('storage/' . $path) : '';
+
+        $data = [
+            'auditory' => $auditoryRes,
+            'count' => $countRes,
+            'user' => $userRes,
+        ];
+
+        $pdf = Pdf::loadView('downloads.belt-auditory-download', compact('data'));
+        return $pdf->download('auditoría.pdf');
+    }
+
+    // Mobile App
+
     public function getList(Request $request)
     {
         $userOwner = $request->user()->id;
@@ -71,16 +257,9 @@ class BeltAuditoryController extends Controller
         $counts = new beltAuditoryCouht;
         $auditoryRes['counts'] = $counts::where('belt_auditory_id', $id)
             ->select(
-                'id',
-                'vehicle_type',
-                'origin',
-                'destination',
                 'adults_count',
                 'belts_count',
-                'child_count',
                 'chairs_count',
-                'coopilot',
-                'overuse_count',
             )
             ->get();
 
@@ -132,15 +311,10 @@ class BeltAuditoryController extends Controller
         $count = new beltAuditoryCouht;
         $countRes = $count::where('belt_auditory_id', $id)
             ->select(
-                'vehicle_type',
-                'origin',
-                'destination',
+
                 'adults_count',
                 'belts_count',
-                'child_count',
                 'chairs_count',
-                'coopilot',
-                'overuse_count',
             )
             ->get();
 

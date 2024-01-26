@@ -56,7 +56,7 @@
 
         <p><strong>{{ $data['count'][$i]['adults_count'] }} Sin Cinturón</p>
         <p><strong>{{ $data['count'][$i]['belts_count'] }} Con Cinturón</strong></p>
-        <p><strong>{{ $data['count'][$i]['child_count'] }} Con Silla de Retención</strong></p>
+        <p><strong>{{ $data['count'][$i]['chairs_count'] }} Con Silla de Retención</strong></p>
 
     @endfor
 
