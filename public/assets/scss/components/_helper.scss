@@ -62,7 +62,7 @@
 
 // Backgroun pattern
 .bg-pattern {
-    background: url("../../images/modal-bg.png") $modal-content-bg;
+    // background: url("../../images/modal-bg.png") $modal-content-bg;
 }
 
 // Fixed minimum width
@@ -86,7 +86,7 @@
     min-width: 160px;
 }
 
-// Search 
+// Search
 .search-box {
     position: relative;
 
@@ -132,7 +132,7 @@
     }
 }
 
-// 
+//
 code {
     user-select: all;
 }
