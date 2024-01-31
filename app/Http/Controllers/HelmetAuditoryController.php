@@ -416,7 +416,7 @@ class HelmetAuditoryController extends Controller
         try {
             \Log::info('Intentando guardar imagen con $newDir: ' . $newDir);
 
-            if (!Storage::disk('public')->put($fullPath, file_get_contents($request->input('image')))) {
+            if (!file_put_contents($fullPath, file_get_contents($request->input('image')))) {
                 \Log::error('No se pudo guardar la imagen. Ruta: ' . $fullPath);
                 return abort(409, 'No se pudo guardar la imagen');
             };
