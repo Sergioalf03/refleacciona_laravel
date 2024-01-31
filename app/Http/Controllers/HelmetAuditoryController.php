@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\ImageManagerStatic as ImageClnr;
+use Intervention\Image\ImageManager as ImageClnr;
 
 class HelmetAuditoryController extends Controller
 {
