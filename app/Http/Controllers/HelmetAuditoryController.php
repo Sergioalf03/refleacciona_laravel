@@ -411,11 +411,13 @@ class HelmetAuditoryController extends Controller
             return abort(409, 'Sin imágen');
         }
 
+        $fullPath = storage_path('app/public/helmet/' . $newDir . '.jpeg');
+
         try {
             \Log::info('Intentando guardar imagen con $newDir: ' . $newDir);
 
-            if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request->input('image')))) {
-                \Log::error('No se pudo guardar la imagen. Ruta: ' . 'helmet/' . $newDir . '.jpeg');
+            if (!Storage::disk('public')->put($fullPath, file_get_contents($request->input('image')))) {
+                \Log::error('No se pudo guardar la imagen. Ruta: ' . $fullPath);
                 return abort(409, 'No se pudo guardar la imagen');
             };
         } catch (\Exception $e) {
