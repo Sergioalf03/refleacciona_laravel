@@ -411,7 +411,7 @@ class HelmetAuditoryController extends Controller
             return abort(409, 'Sin imágen');
         }
 
-        $fullPath = storage_path('app/public/helmet/' . $newDir . '.jpeg');
+        $fullPath = public_path('app/public/helmet/' . $newDir . '.jpeg');
 
         try {
             \Log::info('Intentando guardar imagen con $newDir: ' . $newDir);
