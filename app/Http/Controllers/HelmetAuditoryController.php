@@ -412,17 +412,21 @@ class HelmetAuditoryController extends Controller
         }
 
         try {
+            \Log::info('Intentando guardar imagen con $newDir: ' . $newDir);
+
             if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request->input('image')))) {
+                \Log::error('No se pudo guardar la imagen. Ruta: ' . 'helmet/' . $newDir . '.jpeg');
                 return abort(409, 'No se pudo guardar la imagen');
             };
         } catch (\Exception $e) {
+             \Log::error('Error al procesar la solicitud: ' . $e->getMessage());
             return abort(409, 'Error al procesar la solicitud');
         }
 
         $auditoryEvidence = new HelmetAuditoryEvidence;
         $auditoryEvidenceRes = $auditoryEvidence::create([
             'dir' => $newDir,
-            'creation_date' => $request['creation_date'],
+            'creation_date' => $request->input('creation_date'),
             'helmet_auditory_id' => $id,
         ]);
 
