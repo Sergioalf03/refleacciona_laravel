@@ -208,7 +208,8 @@ class HelmetAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
-        $newDir = $request['helmet_auditory_id'] . '-' . $request['dir'];
+        $id = $request['helmet_auditory_id'];
+        $newDir = $id . '-' . $request['dir'];
 
         if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
             return abort(409, 'No se pudo guardar la imagen');
@@ -218,7 +219,7 @@ class HelmetAuditoryController extends Controller
         $auditoryEvidenceRes = $auditoryEvidence::create([
             'dir' => $newDir,
             'creation_date' => $request['creation_date'],
-            'helmet_auditory_id' => $request['helmet_auditory_id'],
+            'helmet_auditory_id' => $id,
         ]);
 
         return response()->json([
