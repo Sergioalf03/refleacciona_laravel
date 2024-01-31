@@ -14,6 +14,6 @@ class HelmetAuditoryEvidence extends Model
     protected $fillable = [
         'dir',
         'creation_date',
-        'auditory_id',
+        'helmet_auditory_id',
     ];
 }
