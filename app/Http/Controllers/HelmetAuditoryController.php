@@ -402,6 +402,47 @@ class HelmetAuditoryController extends Controller
         $name = $request->input('dir');
         $newDir = $id . '-' . $name;
 
+         // Obtener la instancia del archivo de la solicitud
+    $imageFile = $request->file('image');
+
+    // Verificar si se ha cargado un archivo
+    if ($imageFile && $imageFile->isValid()) {
+        // Leer el contenido del archivo
+        $imageContent = file_get_contents($imageFile->path());
+
+        // Verificar si el contenido de la imagen es válido
+        if ($imageContent !== false) {
+            // Limpiar metadatos usando Intervention Image
+            $image = ImageClnr::make($imageContent);
+            $image->encode(); // Esto eliminará los metadatos EXIF
+
+            // Obtener el contenido de la imagen después de la limpieza
+            $cleanedImageContent = $image->encoded;
+
+            // Ruta de almacenamiento utilizando Laravel Storage
+            $path = 'helmet/' . $newDir . '.jpeg';
+
+            // Guardar la imagen utilizando Laravel Storage
+            Storage::disk('public')->put($path, $cleanedImageContent);
+
+            // Continuar con el proceso...
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Success',
+                'data' => [ true
+                    // 'id' => $auditoryEvidenceRes['id'],
+                ],
+            ], 200);
+        } else {
+            // Manejar el caso en que el contenido de la imagen no es válido
+            return abort(409, 'El contenido de la imagen no es válido');
+        }
+    } else {
+        // Manejar el caso en que no se ha proporcionado ningún archivo o el archivo no es válido
+        return abort(409, 'Sin imágen o archivo no válido');
+    }
+
         if (!$id) {
             return abort(409, 'Sin id ' . $id);
         }
