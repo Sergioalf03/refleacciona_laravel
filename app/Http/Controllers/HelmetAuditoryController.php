@@ -397,13 +397,27 @@ class HelmetAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
-        $id = $request['helmet_auditory_id'];
-        $name = $request['dir'];
+        $id = $request->input('helmet_auditory_id');
+        $name = $request->input('dir');
         $newDir = $id . '-' . $name;
 
-        if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        };
+        if (!$id) {
+            return abort(409, 'Sin id ' . $id);
+        }
+        if (!$name) {
+            return abort(409, 'Sin nombre ' . $name);
+        }
+        if (!$request->has('image')) {
+            return abort(409, 'Sin imágen');
+        }
+
+        try {
+            if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request->input('image')))) {
+                return abort(409, 'No se pudo guardar la imagen');
+            };
+        } catch (\Exception $e) {
+            return abort(409, 'Error al procesar la solicitud');
+        }
 
         $auditoryEvidence = new HelmetAuditoryEvidence;
         $auditoryEvidenceRes = $auditoryEvidence::create([
