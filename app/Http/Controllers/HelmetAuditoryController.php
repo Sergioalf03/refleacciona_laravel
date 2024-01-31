@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\ImageManagerStatic as ImageClnr;
 
 class HelmetAuditoryController extends Controller
 {
@@ -411,6 +412,12 @@ class HelmetAuditoryController extends Controller
             return abort(409, 'Sin imágen');
         }
 
+        $imageContent = $request->input('image');
+
+        if (empty($imageContent)) {
+            return abort(409, 'El contenido de la imagen es vacío');
+        }
+
          // Obtener la instancia del archivo de la solicitud
         $imageFile = $request->file('image');
 
@@ -433,12 +440,24 @@ class HelmetAuditoryController extends Controller
         // Manejar el caso en que no se ha proporcionado ningún archivo
         return abort(409, 'Sin imágen');
     }
+
+        $image = ImageClnr::make($imageFile);
+        $image->encode(); // Esto eliminará los metadatos EXIF
+
+        // Obtener el contenido de la imagen después de la limpieza
+        $cleanedImageContent = $image->encoded;
+
+        // Continuar con el proceso de guardado de la imagen...
+
+
+
+
         $fullPath = public_path('app/public/helmet/' . $newDir . '.jpeg');
 
         try {
             \Log::info('Intentando guardar imagen con $newDir: ' . $newDir);
 
-            if (!file_put_contents($fullPath, file_get_contents($request->input('image')))) {
+            if (!Storage::disk('public')->put($fullPath, file_get_contents($cleanedImageContent))) {
                 \Log::error('No se pudo guardar la imagen. Ruta: ' . $fullPath);
                 return abort(409, 'No se pudo guardar la imagen');
             };
