@@ -1,0 +1,30 @@
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
+@import "variables";
+@import "variables-dark";
+@import "./node_modules/bootstrap/scss/mixins";
+
+@import "theme/material";
+
+@import "structure/topbar";
+@import "structure/footer";
+@import "structure/vertical";
+@import "structure/horizontal";
+@import "structure/layouts";
+
+@import "components/helper";
+
+@import "components/reboot";
+@import "components/buttons";
+@import "components/breadcrumb";
+@import "components/card";
+@import "components/dropdown";
+@import "components/table";
+@import "components/pagination";
+@import "components/form-check";
+@import "components/form-control";
+
+@import "plugins/swiper";
+@import "plugins/leaflet-maps";
+@import "plugins/flatpicker";
+@import "plugins/card";

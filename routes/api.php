@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuditoryController;
 use App\Http\Controllers\BeltAuditoryController;
+use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\GeneralCountAuditoryController;
 use App\Http\Controllers\HelmetAuditoryController;
 use App\Http\Controllers\UserController;
@@ -65,3 +66,26 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/confirm-email', [UserController::class, 'confirmEmail']);
 Route::post('/forget-password', [UserController::class, 'forgetPassword']);
 Route::post('/change-password', [UserController::class, 'changePassword']);
+
+// Web Panel
+Route::get('/dashboard/all-locations', [GeneralController::class, 'getAllLocations']);
+Route::get('/dashboard/auditory-locations/{date}', [GeneralController::class, 'getAuditoryLocations']);
+Route::get('/dashboard/belt-locations/{date}', [GeneralController::class, 'getBeltLocations']);
+Route::get('/dashboard/helmet-locations/{date}', [GeneralController::class, 'getHelmetLocations']);
+Route::get('/dashboard/general-locations/{date}', [GeneralController::class, 'getGeneralLocations']);
+
+Route::post('/w-auditory/list', [AuditoryController::class, 'getPaginatedList']);
+Route::get('/w-auditory/detail/{id}', [AuditoryController::class, 'getWebDetail']);
+Route::get('/w-auditory/pdf/{id}', [AuditoryController::class, 'downloadWebPdf']);
+
+Route::post('/w-helmet/list', [HelmetAuditoryController::class, 'getPaginatedList']);
+Route::get('/w-helmet/detail/{id}', [HelmetAuditoryController::class, 'getWebDetail']);
+Route::get('/w-helmet/pdf/{id}', [HelmetAuditoryController::class, 'downloadWebPdf']);
+
+Route::post('/w-belt/list', [BeltAuditoryController::class, 'getPaginatedList']);
+Route::get('/w-belt/detail/{id}', [BeltAuditoryController::class, 'getWebDetail']);
+Route::get('/w-belt/pdf/{id}', [BeltAuditoryController::class, 'downloadWebPdf']);
+
+Route::post('/w-general/list', [GeneralCountAuditoryController::class, 'getPaginatedList']);
+Route::get('/w-general/detail/{id}', [GeneralCountAuditoryController::class, 'getWebDetail']);
+Route::get('/w-general/pdf/{id}', [GeneralCountAuditoryController::class, 'downloadWebPdf']);
