@@ -411,6 +411,28 @@ class HelmetAuditoryController extends Controller
             return abort(409, 'Sin imágen');
         }
 
+         // Obtener la instancia del archivo de la solicitud
+        $imageFile = $request->file('image');
+
+        // Verificar si se ha cargado un archivo
+        if ($imageFile) {
+        // Obtener el tamaño del archivo en bytes
+        $sizeInBytes = $imageFile->getSize();
+
+        // Convertir el tamaño a kilobytes (KB) o megabytes (MB) para una mejor legibilidad
+        $sizeInKB = round($sizeInBytes / 1024, 2);
+        $sizeInMB = round($sizeInBytes / (1024 * 1024), 2);
+
+        // Imprimir el tamaño en KB y MB
+        \Log::info("Tamaño en KB: " . $sizeInKB . " KB\n");
+        \Log::info("Tamaño en MB: " . $sizeInMB . " MB\n");
+        \Log::info($request->file('image')->getMimeType());
+
+        // Continuar con el proceso de guardado de la imagen...
+    } else {
+        // Manejar el caso en que no se ha proporcionado ningún archivo
+        return abort(409, 'Sin imágen');
+    }
         $fullPath = public_path('app/public/helmet/' . $newDir . '.jpeg');
 
         try {
