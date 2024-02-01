@@ -426,7 +426,7 @@ class HelmetAuditoryController extends Controller
             // Verificar si el contenido de la imagen es válido
             if ($imageContent !== false) {
                 // Limpiar metadatos usando Intervention Image
-                $image = ImageClnr::gd()->read($imageContent);
+                $image = ImageClnr::make($imageContent);
                 $cleanedImageContent = $image->encode();
 
 
