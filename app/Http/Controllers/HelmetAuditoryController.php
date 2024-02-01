@@ -427,10 +427,8 @@ class HelmetAuditoryController extends Controller
             if ($imageContent !== false) {
                 // Limpiar metadatos usando Intervention Image
                 $image = ImageClnr::gd()->read($imageContent);
-                $image->encode(); // Esto eliminará los metadatos EXIF
+                $cleanedImageContent = $image->encode()->getEncoded();
 
-                // Obtener el contenido de la imagen después de la limpieza
-                $cleanedImageContent = $image->encoded;
 
                 // Ruta de almacenamiento utilizando Laravel Storage
                 $path = 'helmet/' . $newDir . '.jpeg';
