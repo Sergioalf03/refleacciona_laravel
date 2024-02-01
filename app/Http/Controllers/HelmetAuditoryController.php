@@ -413,8 +413,8 @@ class HelmetAuditoryController extends Controller
         // Verificar si el contenido de la imagen es válido
         if ($imageContent !== false) {
             // Limpiar metadatos usando Intervention Image
-            $image = ImageClnr::make($imageContent);
-            $image->encode(); // Esto eliminará los metadatos EXIF
+            $image = ImageClnr::gd()->read($imageContent);
+            $image->encodeByMediaType($request->file('image')->getMimeType()); // Esto eliminará los metadatos EXIF
 
             // Obtener el contenido de la imagen después de la limpieza
             $cleanedImageContent = $image->encoded;
@@ -482,8 +482,8 @@ class HelmetAuditoryController extends Controller
         return abort(409, 'Sin imágen');
     }
 
-        $image = ImageClnr::make($imageFile);
-        $image->encode(); // Esto eliminará los metadatos EXIF
+    $image = ImageClnr::gd()->read($imageContent);
+    $image->encodeByMediaType($request->file('image')->getMimeType());
 
         // Obtener el contenido de la imagen después de la limpieza
         $cleanedImageContent = $image->encoded;
