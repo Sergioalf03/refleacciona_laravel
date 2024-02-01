@@ -427,7 +427,7 @@ class HelmetAuditoryController extends Controller
             if ($imageContent !== false) {
                 // Limpiar metadatos usando Intervention Image
                 $image = ImageClnr::gd()->read($imageContent);
-                $cleanedImageContent = $image->encode()->getEncoded();
+                $cleanedImageContent = $image->encode();
 
 
                 // Ruta de almacenamiento utilizando Laravel Storage
