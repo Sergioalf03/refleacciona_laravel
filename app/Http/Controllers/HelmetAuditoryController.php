@@ -418,10 +418,16 @@ class HelmetAuditoryController extends Controller
         // Obtener la instancia del archivo de la solicitud
         $imageFile = $request->file('image');
 
+        // Agrega estas líneas para debug
+
+
         // Verificar si se ha cargado un archivo
         if ($imageFile && $imageFile->isValid()) {
             // Leer el contenido del archivo
             $imageContent = file_get_contents($imageFile->path());
+
+            \Log::info('Contenido de la imagen: ' . base64_encode($imageContent));
+            \Log::info('Tipo MIME de la imagen: ' . $imageFile->getMimeType());
 
             // Verificar si el contenido de la imagen es válido
             if ($imageContent !== false) {
