@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\ImageManager as ImageClnr;
 
 class HelmetAuditoryController extends Controller
 {
@@ -395,27 +396,76 @@ class HelmetAuditoryController extends Controller
         ]);
     }
 
+
+    /**
+     * Maneja la carga y procesamiento de evidencia auditiva relacionada con un casco.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function uploadAuditoryEvidence(Request $request)
     {
-        $newDir = $request['helmet_auditory_id'] . '-' . $request['dir'];
+        // Obtener datos de la solicitud
+        $id = $request->input('helmet_auditory_id');
+        $name = $request->input('dir');
+        $newDir = $id . '-' . $name;
 
-        if (!Storage::disk('public')->put('helmet/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        };
+        // Verificar la existencia de datos necesarios
+        if (!$id || !$name || !$request->has('image')) {
+            return abort(409, 'Datos incompletos o no válidos');
+        }
 
-        $auditoryEvidence = new HelmetAuditoryEvidence;
-        $auditoryEvidenceRes = $auditoryEvidence::create([
-            'dir' => $newDir,
-            'creation_date' => $request['creation_date'],
-            'helmet_auditory_id' => $request['helmet_auditory_id'],
-        ]);
+        // Obtener la instancia del archivo de la solicitud
+        $imageFile = $request->file('image');
 
-        return response()->json([
-            'code' => 200,
-            'message' => 'Success',
-            'data' => [
-                'id' => $auditoryEvidenceRes['id'],
-            ],
-        ], 200);
+        // Agrega estas líneas para debug
+
+
+        // Verificar si se ha cargado un archivo
+        if ($imageFile && $imageFile->isValid()) {
+            // Leer el contenido del archivo
+            $imageContent = file_get_contents($imageFile->path());
+
+            \Log::info('Contenido de la imagen: ' . base64_encode($imageContent));
+            \Log::info('Tipo MIME de la imagen: ' . $imageFile->getMimeType());
+
+            // Verificar si el contenido de la imagen es válido
+            if ($imageContent !== false) {
+                // Limpiar metadatos usando Intervention Image
+                $image = ImageClnr::gd()->read($imageContent);
+                $cleanedImageContent = $image->encode();
+
+
+                // Ruta de almacenamiento utilizando Laravel Storage
+                $path = 'helmet/' . $newDir . '.jpeg';
+
+                // Guardar la imagen utilizando Laravel Storage
+                Storage::disk('public')->put($path, $cleanedImageContent);
+
+                // Crear instancia de HelmetAuditoryEvidence y guardar información
+                $auditoryEvidence = new HelmetAuditoryEvidence;
+                $auditoryEvidenceRes = $auditoryEvidence::create([
+                    'dir' => $newDir,
+                    'creation_date' => $request->input('creation_date'),
+                    'helmet_auditory_id' => $id,
+                ]);
+
+                // Respuesta exitosa
+                return response()->json([
+                    'code' => 200,
+                    'message' => 'Éxito',
+                    'data' => [
+                        'id' => $auditoryEvidenceRes['id'],
+                    ],
+                ], 200);
+            } else {
+                // Manejar el caso en que el contenido de la imagen no es válido
+                return abort(409, 'El contenido de la imagen no es válido');
+            }
+        } else {
+            // Manejar el caso en que no se ha proporcionado ningún archivo o el archivo no es válido
+            return abort(409, 'Sin imagen o archivo no válido');
+        }
     }
+
 }
