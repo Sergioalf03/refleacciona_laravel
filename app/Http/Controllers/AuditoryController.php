@@ -602,4 +602,73 @@ class AuditoryController extends Controller
         ], 200);
     }
 
+    // public function newSave(Request $request)
+    // {
+    //     $personOwner = $request->user()->id_persona;
+    //     $userOwner = $request->user()->id;
+
+    //     $file = $request['archivo'];
+
+    //     if (!isset($file)) {
+    //         return abort(409, 'No se encontro un archivo en la petición');
+    //     }
+
+    //     if (isset($request['size']) && $request['size'] > 100000000) {
+    //         return abort(409, 'El archivo no debe ser mayor a 100 mb');
+    //     }
+
+    //     $fileName = $request['fileName'];
+
+    //     $id = $this->generateDirAppTecnician();
+    //     $path = 'gps-vehicle-evidence/' . $id . '/' . $fileName;
+
+    //     $status = Storage::disk('public')->put($path, base64_decode($file));
+
+    //     if ($status) {
+
+    //         $evidence = new CruceLineaEvidencia;
+    //         $evidenceRes = $evidence::where('id_gps_vehiculo', $request['id_vehiculo'])
+    //         ->where('tipo', $request['tipo'])
+    //         ->where('estatus', 2)
+    //         ->first();
+
+    //         if (isset($evidenceRes)) {
+
+    //             $exists = Storage::disk('public')->exists($path);
+
+    //             if ($exists) {
+    //                 Storage::disk('public')->delete($evidenceRes['url']);
+    //             }
+
+    //             $evidenceUpdateRes = $evidenceRes->fill([
+    //                 'url' => $path,
+    //                 'fuente' => 1,
+    //                 'id_persona' => $personOwner,
+    //                 'usr_cre' => $userOwner,
+    //                 'usr_act' => $userOwner,
+    //             ])->save();
+    //         } else {
+
+    //             $evidenceCreateRes = CruceLineaEvidencia::create([
+    //                 'id_gps_vehiculo' => $request['id_vehiculo'],
+    //                 'tipo' => $request['tipo'],
+    //                 'url' => $path,
+    //                 'estatus' => 2,
+    //                 'fuente' => 1,
+    //                 'id_persona' => $personOwner,
+    //                 'usr_cre' => $userOwner,
+    //                 'usr_act' => $userOwner,
+    //             ]);
+    //         }
+
+    //         return [
+    //             'code' => '200',
+    //             'message' => 'Successful Creation',
+    //         ];
+    //     } else {
+
+    //         return abort(409, 'El archivo no se pudo guardar');
+    //     }
+    // }
+
 }
