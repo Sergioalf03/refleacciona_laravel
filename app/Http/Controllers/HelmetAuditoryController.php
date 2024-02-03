@@ -410,62 +410,32 @@ class HelmetAuditoryController extends Controller
         $name = $request->input('dir');
         $newDir = $id . '-' . $name;
 
-        // Verificar la existencia de datos necesarios
-        if (!$id || !$name || !$request->has('image')) {
-            return abort(409, 'Datos incompletos o no válidos');
-        }
-
         // Obtener la instancia del archivo de la solicitud
-        $imageFile = $request->file('image');
+        $file = $request->file('image');
 
-        // Agrega estas líneas para debug
+        $path = 'helmet/' . $newDir . '.jpeg';
+
+        // Guardar la imagen utilizando Laravel Storage
+        Storage::disk('public')->put($path, base64_decode($file));
+
+        // Crear instancia de HelmetAuditoryEvidence y guardar información
+        $auditoryEvidence = new HelmetAuditoryEvidence;
+        $auditoryEvidenceRes = $auditoryEvidence::create([
+            'dir' => $newDir,
+            'creation_date' => $request->input('creation_date'),
+            'helmet_auditory_id' => $id,
+        ]);
+
+        // Respuesta exitosa
+        return response()->json([
+            'code' => 200,
+            'message' => 'Éxito',
+            'data' => [
+                'id' => $auditoryEvidenceRes['id'],
+            ],
+        ], 200);
 
 
-        // Verificar si se ha cargado un archivo
-        if ($imageFile && $imageFile->isValid()) {
-            // Leer el contenido del archivo
-            $imageContent = file_get_contents($imageFile->path());
-
-            \Log::info('Contenido de la imagen: ' . base64_encode($imageContent));
-            \Log::info('Tipo MIME de la imagen: ' . $imageFile->getMimeType());
-
-            // Verificar si el contenido de la imagen es válido
-            if ($imageContent !== false) {
-                // Limpiar metadatos usando Intervention Image
-                $image = ImageClnr::gd()->read($imageContent);
-                $cleanedImageContent = $image->encode();
-
-
-                // Ruta de almacenamiento utilizando Laravel Storage
-                $path = 'helmet/' . $newDir . '.jpeg';
-
-                // Guardar la imagen utilizando Laravel Storage
-                Storage::disk('public')->put($path, $cleanedImageContent);
-
-                // Crear instancia de HelmetAuditoryEvidence y guardar información
-                $auditoryEvidence = new HelmetAuditoryEvidence;
-                $auditoryEvidenceRes = $auditoryEvidence::create([
-                    'dir' => $newDir,
-                    'creation_date' => $request->input('creation_date'),
-                    'helmet_auditory_id' => $id,
-                ]);
-
-                // Respuesta exitosa
-                return response()->json([
-                    'code' => 200,
-                    'message' => 'Éxito',
-                    'data' => [
-                        'id' => $auditoryEvidenceRes['id'],
-                    ],
-                ], 200);
-            } else {
-                // Manejar el caso en que el contenido de la imagen no es válido
-                return abort(409, 'El contenido de la imagen no es válido');
-            }
-        } else {
-            // Manejar el caso en que no se ha proporcionado ningún archivo o el archivo no es válido
-            return abort(409, 'Sin imagen o archivo no válido');
-        }
     }
 
 }
