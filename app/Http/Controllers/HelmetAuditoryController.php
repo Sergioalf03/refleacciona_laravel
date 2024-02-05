@@ -407,12 +407,12 @@ class HelmetAuditoryController extends Controller
     public function uploadAuditoryEvidence(Request $request)
     {
         // Obtener datos de la solicitud
-        $id = $request->input('helmet_auditory_id');
-        $name = $request->input('dir');
+        $id = $request['helmet_auditory_id'];
+        $name = $request['dir'];
         $newDir = $id . '-' . $name;
 
         // Obtener la instancia del archivo de la solicitud
-        $file = $request->file('image');
+        $file = $request['image'];
 
         $path = 'helmet/' . $newDir;
 
