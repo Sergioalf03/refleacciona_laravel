@@ -214,6 +214,7 @@ class HelmetAuditoryController extends Controller
                 'date',
                 'status',
             )
+            ->orderBy('id', 'desc')
             ->get();
 
         return response()->json([
