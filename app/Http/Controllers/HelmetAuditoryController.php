@@ -414,11 +414,11 @@ class HelmetAuditoryController extends Controller
         // Obtener la instancia del archivo de la solicitud
         $file = $request->file('image');
 
-        $path = 'helmet/' . $newDir . '.jpeg';
+        $path = 'helmet/' . $newDir;
 
         // Guardar la imagen utilizando Laravel Storage
-        // Storage::disk('public')->put($path, base64_decode($file));
-        Storage::disk('public')->put($path, $file);
+        Storage::disk('public')->put($path, base64_decode($file));
+        // Storage::disk('public')->put($path, $file);
 
         // Crear instancia de HelmetAuditoryEvidence y guardar información
         $auditoryEvidence = new HelmetAuditoryEvidence;
@@ -434,6 +434,7 @@ class HelmetAuditoryController extends Controller
             'message' => 'Éxito',
             'data' => [
                 'id' => $auditoryEvidenceRes['id'],
+                'dir' => $newDir,
             ],
         ], 200);
 

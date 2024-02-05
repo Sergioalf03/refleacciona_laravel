@@ -211,6 +211,7 @@ class BeltAuditoryController extends Controller
                 'date',
                 'status',
             )
+            ->orderBy('id', 'desc')
             ->get();
 
         return response()->json([
