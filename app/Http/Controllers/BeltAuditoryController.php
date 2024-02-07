@@ -402,20 +402,18 @@ class BeltAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
-        if (!file_exists($request->file('image'))) {
-            return response()->json([
-                'code' => 409,
-                'message' => 'No se recibió el archivo',
-                'data' => $request->all(),
-                'file' => $request->file('image')->getClientOriginalName()
-            ], 409);
-        }
-        $newDir = $request['belt_auditory_id'] . '-' . $request['dir'];
-        $completeDir = 'belt/' . $newDir . '.jpeg';
+        // Obtener datos de la solicitud
+        $id = $request['belt_auditory_id'];
+        $name = $request['dir'];
+        $newDir = $id . '-' . $name;
 
-        if (!Storage::disk('public')->put($completeDir, base64_decode($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        };
+        // Obtener la instancia del archivo de la solicitud
+        $file = $request['image'];
+
+        $path = 'belt/' . $newDir;
+
+        // Guardar la imagen utilizando Laravel Storage
+        Storage::disk('public')->put($path, base64_decode($file));
 
 
         $auditoryEvidence = new beltAuditoryEvidence;

@@ -558,11 +558,19 @@ class AuditoryController extends Controller
     }
 
     public function uploadAuditoryEvidence(Request $request) {
-        $newDir = $request['auditory_id'] . '-' . $request['dir'];
 
-        if (!Storage::disk('public')->put('auditories/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        };
+         // Obtener datos de la solicitud
+         $id = $request['auditory_id'];
+         $name = $request['dir'];
+         $newDir = $id . '-' . $name;
+
+         // Obtener la instancia del archivo de la solicitud
+         $file = $request['image'];
+
+         $path = 'auditories/' . $newDir;
+
+         // Guardar la imagen utilizando Laravel Storage
+         Storage::disk('public')->put($path, base64_decode($file));
 
         $auditoryEvidence = new AuditoryEvidence;
         $auditoryEvidenceRes = $auditoryEvidence::create([
@@ -581,15 +589,22 @@ class AuditoryController extends Controller
     }
 
     public function uploadAnswerEvidence(Request $request) {
-        $dir = $request['auditory_id'] . '-' . $request['dir'];
+        // Obtener datos de la solicitud
+        $id = $request['auditory_id'];
+        $name = $request['dir'];
+        $newDir = $id . '-' . $name;
 
-        if (!Storage::disk('public')->put('answers/' . $dir . '.jpeg', file_get_contents($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        }
+        // Obtener la instancia del archivo de la solicitud
+        $file = $request['image'];
+
+        $path = 'answers/' . $newDir;
+
+        // Guardar la imagen utilizando Laravel Storage
+        Storage::disk('public')->put($path, base64_decode($file));
 
         $answerEvidence = new AnswerEvidence;
         $answerEvidenceRes = $answerEvidence::create([
-            'dir' => $dir,
+            'dir' => $newDir,
             'creation_date' => $request['creation_date'],
             'auditory_id' => $request['auditory_id'],
             'question_id' => $request['question_id'],
