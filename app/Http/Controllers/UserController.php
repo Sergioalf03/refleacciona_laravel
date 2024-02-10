@@ -99,7 +99,11 @@ class UserController extends Controller
     {
         $userId = $request->user()->id;
 
-        Storage::disk('public')->put('logo/' . $userId. '.jpeg', file_get_contents($request['image']));
+        // Obtener la instancia del archivo de la solicitud
+        $file = $request['image'];
+
+        // Guardar la imagen utilizando Laravel Storage
+        Storage::disk('public')->put('logo/' . $userId. '.jpeg', base64_decode($file));
 
         return response()->json([
             'code' => 200,

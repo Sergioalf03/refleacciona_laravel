@@ -437,12 +437,6 @@ class GeneralCountAuditoryController extends Controller
 
     public function uploadAuditoryEvidence(Request $request)
     {
-        $newDir = $request['general_count_auditory_id'] . '-' . $request['dir'];
-
-        if (!Storage::disk('public')->put('general/' . $newDir . '.jpeg', file_get_contents($request['image']))) {
-            return abort(409, 'No se pudo guardar la imagen');
-        };
-
         // Obtener datos de la solicitud
         $id = $request['belt_auditory_id'];
         $name = $request['dir'];
