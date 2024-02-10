@@ -157,7 +157,7 @@ class BeltAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/belt/' . $e['dir'] . '.jpeg';
+            return 'storage/belt/' . $e['dir'];
         }, $auditoryEvidenceRes->toArray());
 
         $count = new beltAuditoryCouht;
@@ -306,7 +306,7 @@ class BeltAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/belt/' . $e['dir'] . '.jpeg';
+            return 'storage/belt/' . $e['dir'];
         }, $auditoryEvidenceRes->toArray());
 
         $count = new beltAuditoryCouht;

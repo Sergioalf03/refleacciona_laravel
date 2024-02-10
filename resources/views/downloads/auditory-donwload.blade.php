@@ -46,7 +46,7 @@
 
 
         @for($i = 0; $i < count($data['auditory']['evidences']); $i++) <div class="text-center mb-4">
-            <img src="{{ public_path($data['auditory']['evidences'][$i]['dir']) }}" data-holder-rendered="true" width="50%"></img>
+            <img src="{{ public_path($data['auditory']['evidences'][$i]) }}" data-holder-rendered="true" width="50%">
     </div>
     @endfor
 

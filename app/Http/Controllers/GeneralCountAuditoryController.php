@@ -164,7 +164,7 @@ class GeneralCountAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/general/' . $e['dir'] . '.jpeg';
+            return 'storage/general/' . $e['dir'];
         }, $auditoryEvidenceRes->toArray());
 
         $count = new GeneralCountAuditoryCount;
@@ -327,7 +327,7 @@ class GeneralCountAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/general/' . $e['dir'] . '.jpeg';
+            return 'storage/general/' . $e['dir'];
         }, $auditoryEvidenceRes->toArray());
 
         $count = new GeneralCountAuditoryCount;

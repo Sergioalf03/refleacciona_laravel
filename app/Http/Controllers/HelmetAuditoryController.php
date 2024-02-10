@@ -159,7 +159,7 @@ class HelmetAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/helmet/' . $e['dir'] . '.jpeg';
+            return 'storage/helmet/' . $e['dir'];
         }, $auditoryEvidenceRes->toArray());
 
         $count = new HelmetAuditoryCount;
@@ -312,7 +312,7 @@ class HelmetAuditoryController extends Controller
             ->get();
 
         $auditoryRes['evidences'] = array_map(function ($e) {
-            return 'storage/helmet/' . $e['dir'] . '.jpeg';
+            return 'storage/helmet/' . $e['dir'];
         }, $auditoryEvidenceRes->toArray());
 
         $count = new HelmetAuditoryCount;
