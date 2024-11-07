@@ -161,7 +161,7 @@ class UserController extends Controller
         $userResult = $userDb::create([
             'name' => $request['name'],
             'email' => $request['email'],
-            'phone_number' => '0',
+            'phone_number' => '1',
             'password' => Hash::make($request['password']),
             'key' => Hash::make($randomString),
             'img' => 'nop', // to save img
@@ -171,7 +171,7 @@ class UserController extends Controller
 
         return response()->json([
             'code' => 200,
-            'message' => 'Success',
+            'message' => $randomString,
         ], 200);
     }
 
