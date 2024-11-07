@@ -145,7 +145,6 @@ class UserController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'phone_number' => 'required',
             'key' => 'required',
         ]);
 
@@ -162,7 +161,7 @@ class UserController extends Controller
         $userResult = $userDb::create([
             'name' => $request['name'],
             'email' => $request['email'],
-            'phone_number' => $request['phone_number'],
+            'phone_number' => '0',
             'password' => Hash::make($request['password']),
             'key' => Hash::make($randomString),
             'img' => 'nop', // to save img
