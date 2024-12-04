@@ -12,14 +12,9 @@
 
     <div class="mx-2 mt-4">
 
-        @if (isset($data['user']['logo']) && $data['user']['logo'] != '')
-        <div style="margin-top: 150px;" class="text-center">
-            <img src="{{ public_path($data['user']['logo']) }}" data-holder-rendered=" true" width="50%"></img>
-        </div>
-        <h2 class="text-center mt-4 mb-4" style="font-size: 40px;">{{ $data['auditory']['title'] }}</h2>
-        @else
+
         <h2 class="text-center mb-4" style="margin-top: 450px; font-size: 40px;">{{ $data['auditory']['title'] }}</h2>
-        @endif
+
 
         <p class="mt-4 text-center"><strong>Fecha</strong></p>
         <p class="text-center">{{ $data['auditory']['date'] }} {{ $data['auditory']['time'] }}</p>
