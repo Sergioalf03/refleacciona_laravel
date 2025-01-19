@@ -59,6 +59,8 @@ Route::group(['middleware' => ['auth:sanctum' /*, VerfiedAndActuveUser::class*/]
     Route::get('/general-count-auditory/pdf/{id}', [GeneralCountAuditoryController::class, 'downloadPdf']);
     Route::post('/general-count-auditory/import', [GeneralCountAuditoryController::class, 'import']);
     Route::post('/general-count-auditory/upload-auditory-evidence', [GeneralCountAuditoryController::class, 'uploadAuditoryEvidence']);
+
+    Route::delete('/delete-account', [UserController::class, 'deleteUser']);
 });
 
 Route::post('/login', [UserController::class, 'login']);
@@ -66,6 +68,7 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/confirm-email', [UserController::class, 'confirmEmail']);
 Route::post('/forget-password', [UserController::class, 'forgetPassword']);
 Route::post('/change-password', [UserController::class, 'changePassword']);
+
 
 // Web Panel
 Route::get('/dashboard/all-locations', [GeneralController::class, 'getAllLocations']);

@@ -253,4 +253,19 @@ class UserController extends Controller
             'message' => 'Success',
         ], 200);
     }
+
+    public function deleteUser(Request $request) {
+        $userId = $request->user()->id;
+
+        $user = new User;
+        $userRes = $user::where('id', $userId)
+            ->update([
+                'email' => 'xdelacc-' . $request->user()->email,
+            ]);
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Success',
+        ], 200);
+    }
 }
